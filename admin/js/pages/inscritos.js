@@ -142,8 +142,12 @@
     async function handleRemove(button, inscricao) {
         const nome = inscricao.participante?.nome ?? "este participante";
         const evento = inscricao.evento?.nome ?? "o evento";
-        const message = `Remover a inscrição de "${nome}" em "${evento}"? A vaga volta a ficar disponível.`;
-        if (!window.confirm(message)) return;
+        const confirmed = await modal.confirm({
+            title: "Remover inscrição?",
+            message: `A inscrição de "${nome}" em "${evento}" será removida e a vaga volta a ficar disponível.`,
+            confirmLabel: "Remover inscrição"
+        });
+        if (!confirmed) return;
 
         dom.setLoading(button, true, "Removendo...");
 

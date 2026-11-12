@@ -214,7 +214,12 @@
 
     async function handleDelete(button, usuario) {
         const label = usuario.nome ? `${usuario.nome} (${usuario.email})` : usuario.email;
-        if (!window.confirm(`Excluir o usuário ${label}? Ele perderá o acesso ao painel. Esta ação não pode ser desfeita.`)) return;
+        const confirmed = await modal.confirm({
+            title: "Excluir usuário?",
+            message: `${label} perderá o acesso ao painel. Esta ação não pode ser desfeita.`,
+            confirmLabel: "Excluir usuário"
+        });
+        if (!confirmed) return;
 
         dom.setLoading(button, true, "Excluindo...");
 

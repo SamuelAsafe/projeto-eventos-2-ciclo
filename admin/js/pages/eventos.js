@@ -148,7 +148,12 @@
         if (!button) return;
 
         const { id, nome } = button.dataset;
-        if (!window.confirm(`Excluir o evento "${nome}"? Esta ação não pode ser desfeita.`)) return;
+        const confirmed = await modal.confirm({
+            title: "Excluir evento?",
+            message: `O evento "${nome}" será removido. Esta ação não pode ser desfeita.`,
+            confirmLabel: "Excluir evento"
+        });
+        if (!confirmed) return;
 
         dom.setLoading(button, true, "Excluindo...");
 

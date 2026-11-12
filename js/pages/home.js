@@ -26,6 +26,8 @@
         next: document.getElementById("carrossel-proximo")
     };
 
+    let stopRealtime = null;
+
     const state = {
         eventos: [],
         categorias: [],
@@ -220,6 +222,28 @@
         window.addEventListener("resize", debounce(updateCarouselButtons, 120));
     }
 
+    /* ---------- Tempo real ---------- */
+
+    // Vagas mudaram (alguém se inscreveu): atualiza as barras no lugar.
+    // Se a situação mudou (ex.: esgotou), re-renderiza para atualizar selos e filtros.
+    function handleEventoAtualizado(row) {
+        const evento = state.eventos.find((item) => String(item.id) === String(row.id));
+        if (!evento) return;
+
+        const before = eventoView.situacao(evento).status;
+        Object.assign(evento, row, { categoria: evento.categoria }); // payload não traz o join
+        const after = eventoView.situacao(evento).status;
+
+        if (before !== after) {
+            renderFeatured();
+            renderGrid();
+            return;
+        }
+
+        document.querySelectorAll(`[data-evento-id="${CSS.escape(String(evento.id))}"]`)
+            .forEach((card) => eventoView.updateCapacity(card, evento));
+    }
+
     /* ---------- Inicialização ---------- */
 
     async function load() {
@@ -245,6 +269,9 @@
             syncControls();
             renderFeatured();
             renderGrid();
+
+            stopRealtime?.();
+            stopRealtime = catalogoService.onEventoAtualizado(handleEventoAtualizado);
         } catch (error) {
             console.error("[home] Falha ao carregar eventos:", error);
             renderLoadError();

@@ -114,6 +114,22 @@
         elements.notFound.querySelector("p:not(.empty-state-title)").textContent = "Verifique sua conexão e tente novamente.";
     }
 
+    // Vagas atualizadas em tempo real enquanto a página está aberta.
+    function watch(evento) {
+        catalogoService.onEventoAtualizado((row) => {
+            if (String(row.id) !== String(evento.id)) return;
+
+            const before = eventoView.situacao(evento).aberto;
+            Object.assign(evento, row, { categoria: evento.categoria });
+
+            if (eventoView.situacao(evento).aberto !== before) {
+                render(evento); // abriu/fechou: troca o botão de inscrição
+            } else {
+                eventoView.updateCapacity(elements.content, evento);
+            }
+        });
+    }
+
     async function init() {
         const id = readId();
         if (!id) {
@@ -123,8 +139,12 @@
 
         try {
             const evento = await catalogoService.getEvento(id);
-            if (evento) render(evento);
-            else showNotFound();
+            if (evento) {
+                render(evento);
+                watch(evento);
+            } else {
+                showNotFound();
+            }
         } catch (error) {
             console.error("[evento] Falha ao carregar:", error);
             showError();

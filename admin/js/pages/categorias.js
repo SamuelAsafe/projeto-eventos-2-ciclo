@@ -205,7 +205,12 @@
     /* ---------- Ações da tabela ---------- */
 
     async function handleDelete(button, categoria) {
-        if (!window.confirm(`Excluir a categoria "${categoria.nome}"? Esta ação não pode ser desfeita.`)) return;
+        const confirmed = await modal.confirm({
+            title: "Excluir categoria?",
+            message: `A categoria "${categoria.nome}" será removida. Esta ação não pode ser desfeita.`,
+            confirmLabel: "Excluir categoria"
+        });
+        if (!confirmed) return;
 
         dom.setLoading(button, true, "Excluindo...");
 

@@ -115,20 +115,14 @@
             </form>
         </div>
 
-        <section id="inscricao-confirmada" class="subscription-confirmation" hidden aria-live="polite">
-            <svg class="success-check" viewBox="0 0 52 52" aria-hidden="true">
-                <circle cx="26" cy="26" r="24" />
-                <path d="M15 27l7 7 15-15" />
-            </svg>
-            <h1 class="title" tabindex="-1" id="confirmacao-titulo">Inscrição confirmada!</h1>
-            <p>Guarde seu código de confirmação:</p>
-            <strong class="confirmation-code" id="codigo-confirmacao"></strong>
-            <p class="confirmation-event" id="confirmacao-evento"></p>
-            <div class="confirmation-actions">
-                <a class="btn-cta" id="link-voltar-evento" href="index.html">Ver evento</a>
-                <a class="btn-ghost" href="index.html#eventos">Outros eventos</a>
+        <!-- Conteúdo do modal de confirmação (clonado por js/pages/inscricao.js) -->
+        <template id="tpl-confirmacao">
+            <div class="confirmation">
+                <p>Guarde seu código de confirmação:</p>
+                <strong class="confirmation-code" data-slot="codigo"></strong>
+                <p class="confirmation-event" data-slot="evento"></p>
             </div>
-        </section>
+        </template>
     </main>
 
     <footer class="footer">
@@ -142,6 +136,7 @@
     <script src="./assets/js/utils/dom.js"></script>
     <script src="./assets/js/utils/text.js"></script>
     <script src="./assets/js/utils/validation.js"></script>
+    <script src="./assets/js/utils/modal.js"></script>
     <script src="./assets/js/motion.js"></script>
     <script src="./js/services/catalogoService.js"></script>
     <script src="./js/components/eventoView.js"></script>

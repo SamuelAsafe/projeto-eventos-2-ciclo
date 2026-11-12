@@ -69,6 +69,23 @@ const catalogoService = (function () {
         },
 
         /**
+         * Escuta alterações em `eventos` em tempo real (ex.: vagas mudando quando
+         * alguém se inscreve). Requer a tabela na publicação `supabase_realtime`
+         * (migration 20261112020000_realtime_eventos.sql). Sem isso, simplesmente não dispara.
+         * @param {(evento: object) => void} callback recebe a linha atualizada (sem joins)
+         * @returns {() => void} cancela a inscrição
+         */
+        onEventoAtualizado(callback) {
+            const channel = window.supabaseClient
+                .channel(`eventos-publico-${Math.random().toString(36).slice(2)}`)
+                .on("postgres_changes", { event: "UPDATE", schema: "public", table: "eventos" },
+                    (payload) => callback(payload.new))
+                .subscribe();
+
+            return () => window.supabaseClient.removeChannel(channel);
+        },
+
+        /**
          * Inscreve o participante no evento.
          * @returns {Promise<{ inscricaoId: number, codigo: string }>}
          * @throws {Error & { field?: string }} mensagem pronta para exibir

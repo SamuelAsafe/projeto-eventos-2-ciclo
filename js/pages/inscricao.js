@@ -1,6 +1,6 @@
 /*
  * Página de inscrição (inscricao.html?id=N).
- * Depende de: catalogoService, eventoView, dom, text, validation, motion.
+ * Depende de: catalogoService, eventoView, dom, text, validation, modal, motion.
  *
  * A validação aqui é para dar retorno rápido ao usuário; o banco valida de
  * novo na função `inscrever_participante` (não confiamos no navegador).
@@ -23,11 +23,7 @@
         cpf: document.getElementById("campo-documento"),
         whatsapp: document.getElementById("campo-whatsapp"),
         birth: document.getElementById("campo-nascimento"),
-        confirmation: document.getElementById("inscricao-confirmada"),
-        confirmationTitle: document.getElementById("confirmacao-titulo"),
-        confirmationCode: document.getElementById("codigo-confirmacao"),
-        confirmationEvent: document.getElementById("confirmacao-evento"),
-        backToEvent: document.getElementById("link-voltar-evento"),
+        confirmationTemplate: document.getElementById("tpl-confirmacao"),
         breadcrumbEvent: document.getElementById("breadcrumb-evento")
     };
 
@@ -141,15 +137,45 @@
         motion.observe(elements.content);
     }
 
-    function showConfirmation(codigo) {
-        elements.confirmationCode.textContent = codigo ?? "";
-        elements.confirmationEvent.textContent = `${evento.nome} · ${text.formatDateLong(evento.data)}`;
-        elements.backToEvent.href = `evento.html?id=${encodeURIComponent(evento.id)}`;
+    /** Atualiza vagas no resumo (após inscrever ou via tempo real). */
+    function applyEventoUpdate(row) {
+        Object.assign(evento, row, { categoria: evento.categoria }); // payload sem o join
+        const situacao = eventoView.updateCapacity(elements.summary, evento);
 
-        elements.content.hidden = true;
-        elements.confirmation.hidden = false;
-        elements.confirmationTitle.focus();
-        window.scrollTo({ top: 0 });
+        // Esgotou enquanto a pessoa preenchia: avisa e bloqueia o envio.
+        if (!situacao.aberto && !elements.content.hidden) {
+            elements.submit.disabled = true;
+            dom.showFeedback(elements.feedback, "error",
+                situacao.status === "encerrado" ? "As inscrições para este evento foram encerradas." : "As vagas deste evento esgotaram.");
+        }
+    }
+
+    async function refreshEvento() {
+        try {
+            const atualizado = await catalogoService.getEvento(evento.id);
+            if (atualizado) applyEventoUpdate(atualizado);
+        } catch (error) {
+            console.warn("[inscricao] Não foi possível atualizar as vagas:", error);
+        }
+    }
+
+    async function showConfirmation(codigo) {
+        const content = elements.confirmationTemplate.content.firstElementChild.cloneNode(true);
+        content.querySelector('[data-slot="codigo"]').textContent = codigo ?? "";
+        content.querySelector('[data-slot="evento"]').textContent = `${evento.nome} · ${text.formatDateLong(evento.data)}`;
+
+        await modal.show({
+            title: "Inscrição confirmada!",
+            content,
+            tone: "success",
+            actions: [
+                { label: "Ver evento", href: `evento.html?id=${encodeURIComponent(evento.id)}`, variant: "primary" },
+                { label: "Fechar", value: "fechar", variant: "ghost" }
+            ]
+        });
+
+        // De volta ao formulário (ex.: inscrever outra pessoa).
+        if (!elements.submit.disabled) elements.form.querySelector("input")?.focus();
     }
 
     /* ---------- Envio ---------- */
@@ -165,6 +191,9 @@
 
         try {
             const { codigo } = await catalogoService.inscrever(evento.id, dados);
+            elements.form.reset();
+            validation.clearForm(FIELDS);
+            await refreshEvento(); // vagas atualizadas sem sair da página
             showConfirmation(codigo);
         } catch (error) {
             console.error("[inscricao] Falha ao inscrever:", error.cause ?? error);
@@ -177,6 +206,7 @@
             dom.showFeedback(elements.feedback, "error", error.message);
         } finally {
             dom.setLoading(elements.submit, false);
+            if (!eventoView.situacao(evento).aberto) elements.submit.disabled = true; // esgotou
         }
     }
 
@@ -222,6 +252,11 @@
 
         bindEvents();
         showForm();
+
+        // Tempo real: outras inscrições atualizam as vagas enquanto a página está aberta.
+        catalogoService.onEventoAtualizado((row) => {
+            if (String(row.id) === String(evento.id)) applyEventoUpdate(row);
+        });
     }
 
     init();

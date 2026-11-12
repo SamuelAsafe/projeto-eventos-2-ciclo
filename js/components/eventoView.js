@@ -91,7 +91,8 @@ const eventoView = (function () {
         ].join("");
 
         return `
-            <article class="event-card event-card--${variant}${info.aberto ? "" : " is-closed"}" ${accentStyle(evento)} data-reveal>
+            <article class="event-card event-card--${variant}${info.aberto ? "" : " is-closed"}" ${accentStyle(evento)}
+                data-evento-id="${dom.escapeHtml(evento.id)}" data-reveal>
                 <a class="event-card-link" href="${href}" aria-label="${dom.escapeHtml(evento.nome)} — ver detalhes">
                     <div class="event-cover">
                         <span class="event-cover-watermark" aria-hidden="true">${dom.escapeHtml(categoria)}</span>
@@ -121,6 +122,29 @@ const eventoView = (function () {
         ).join("");
     }
 
+    /**
+     * Atualiza, no lugar, as barras de ocupação dentro de `scope` (sem re-renderizar):
+     * texto, porcentagem, largura (animada pelo CSS) e estado.
+     */
+    function updateCapacity(scope, evento) {
+        const info = situacao(evento);
+
+        scope.querySelectorAll(".capacity").forEach((capacity) => {
+            const [label, percent] = capacity.querySelectorAll(".capacity-row span");
+            if (label) label.textContent = info.label;
+            if (percent) percent.textContent = `${info.percent}%`;
+
+            capacity.querySelector(".capacity-fill")?.style.setProperty("--fill", `${info.percent}%`);
+            capacity.querySelector(".capacity-track")?.setAttribute("aria-valuenow", String(info.percent));
+
+            capacity.classList.remove("capacity--aberto", "capacity--ultimas", "capacity--esgotado", "capacity--encerrado");
+            capacity.classList.add(`capacity--${info.status}`, "is-updated");
+            setTimeout(() => capacity.classList.remove("is-updated"), 1200);
+        });
+
+        return info;
+    }
+
     /** Preenche `<span data-icon="nome">` com o SVG correspondente (ícones estáticos do HTML). */
     function hydrateIcons(scope = document) {
         scope.querySelectorAll("[data-icon]").forEach((element) => {
@@ -129,5 +153,5 @@ const eventoView = (function () {
         });
     }
 
-    return Object.freeze({ ICONS, accentStyle, situacao, dateBadge, progress, card, skeletonCards, hydrateIcons });
+    return Object.freeze({ ICONS, accentStyle, situacao, dateBadge, progress, card, skeletonCards, hydrateIcons, updateCapacity });
 })();
