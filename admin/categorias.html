@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
     <title>Categorias | Painel Administrativo</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
 
@@ -16,9 +17,12 @@
     <!-- Autenticação: carregada no <head> para validar a sessão antes de exibir a página -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
     <script src="../supabase-credentials.js"></script>
-    <script src="./js/supabaseClient.js"></script>
+    <script src="../assets/js/supabaseClient.js"></script>
     <script src="./js/services/authService.js"></script>
     <script src="./js/guard.js"></script>
+
+    <!-- Tema: no <head> para aplicar antes da primeira pintura (sem "flash") -->
+    <script src="../assets/js/theme.js"></script>
 </head>
 
 <body>
@@ -115,9 +119,9 @@
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
     </footer>
 
-    <script src="./js/utils/dom.js"></script>
-    <script src="./js/utils/text.js"></script>
-    <script src="./js/utils/validation.js"></script>
+    <script src="../assets/js/utils/dom.js"></script>
+    <script src="../assets/js/utils/text.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
     <script src="./js/services/categoriasService.js"></script>
     <script src="./js/pages/categorias.js"></script>
 </body>

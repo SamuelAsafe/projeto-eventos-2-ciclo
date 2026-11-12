@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Eventos</title>
+    <title>Eventos Fatec | Agenda de eventos</title>
+    <meta name="description" content="Workshops, palestras, hackathons e outros eventos da Fatec. Encontre e inscreva-se.">
+    <meta name="color-scheme" content="dark light">
     <link rel="stylesheet" href="./assets/css/styles.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,56 +14,132 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet">
+
+    <!-- Tema: no <head> para aplicar antes da primeira pintura (sem "flash") -->
+    <script src="./assets/js/theme.js"></script>
 </head>
 
-<body>
-    <nav class="header-menu">
-        <img class="logo" alt="logotipo eventos fatec" title="Logotipo eventos fatec"
-            src="./assets/images/logotipo-eventos-fatec.png" />
+<body class="site">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <nav class="header-menu" aria-label="Principal">
+        <a href="index.html" class="brand">
+            <img class="logo" alt="Eventos Fatec — início" src="./assets/images/logotipo-eventos-fatec.png" />
+        </a>
         <ul class="navigation">
             <li class="item">
-                <a class="link active" href="index.html">Eventos</a>
+                <a class="link active" href="index.html" aria-current="page">Início</a>
+            </li>
+            <li class="item">
+                <a class="link" href="index.html#eventos">Eventos</a>
             </li>
             <li class="item">
                 <a class="link" href="index.html#categorias">Categorias</a>
             </li>
             <li class="item">
-                <button class="call-to-action">Explorar <i>Eventos</i></button>
+                <a class="call-to-action" href="index.html#eventos">Explorar eventos</a>
             </li>
         </ul>
     </nav>
 
     <header class="hero">
-        <h1 class="title">Onde sua turma <span class="highlight">encontra o próximo evento</span></h1>
-        <p class="description">Aqui você encontra os melhores eventos da região</p>
+        <div class="hero-aurora" aria-hidden="true">
+            <span class="blob blob-1"></span>
+            <span class="blob blob-2"></span>
+            <span class="blob blob-3"></span>
+            <span class="hero-grid"></span>
+        </div>
 
-        <input class="search" type="text" id="busca-eventos" placeholder="Buscar por nome do evento..." />
+        <div class="hero-content">
+            <p class="eyebrow" data-reveal>Agenda oficial · Fatec</p>
+            <h1 class="title" data-reveal>Onde sua turma <span class="highlight">encontra o próximo evento</span></h1>
+            <p class="description" data-reveal>Workshops, palestras, hackathons e muito mais. Encontre o seu e garanta a vaga em poucos cliques.</p>
+        </div>
     </header>
 
-    <section class="events">
-        <nav class="filter" id="categorias">
-            <ul class="filter-list">
-                <li class="item active" data-categoria="todos">Todos</li>
-                <li class="item" data-categoria="Workshop">Workshop</li>
-                <li class="item" data-categoria="Palestra">Palestra</li>
-                <li class="item" data-categoria="Hackathon">Hackathon</li>
-                <li class="item" data-categoria="Meetup">Meetup</li>
-                <li class="item" data-categoria="Curso">Curso</li>
-                <li class="item" data-categoria="Show">Show</li>
-            </ul>
-        </nav>
+    <main id="conteudo">
+        <form class="search-panel" id="form-busca" role="search" aria-label="Buscar eventos" data-reveal="scale">
+            <label class="search-field">
+                <span class="search-icon search-icon--primary" data-icon="search"></span>
+                <span class="search-text">
+                    <span class="search-label">Evento</span>
+                    <input type="search" id="busca-eventos" name="q" placeholder="Buscar por nome..." autocomplete="off" />
+                </span>
+            </label>
 
-        <p class="results-count" id="contador-eventos"></p>
+            <label class="search-field">
+                <span class="search-icon search-icon--secondary" data-icon="calendar"></span>
+                <span class="search-text">
+                    <span class="search-label">Quando</span>
+                    <select id="filtro-periodo" name="quando">
+                        <option value="proximos">Próximos eventos</option>
+                        <option value="mes">Este mês</option>
+                        <option value="todos">Todas as datas</option>
+                        <option value="encerrados">Já encerrados</option>
+                    </select>
+                </span>
+            </label>
 
-        <div class="list" id="lista-eventos"></div>
-    </section>
+            <label class="search-field">
+                <span class="search-icon search-icon--tertiary" data-icon="grid"></span>
+                <span class="search-text">
+                    <span class="search-label">Categoria</span>
+                    <select id="filtro-categoria" name="categoria">
+                        <option value="">Todas</option>
+                    </select>
+                </span>
+            </label>
+
+            <button type="submit" class="search-submit">
+                <span data-icon="search"></span>
+                Buscar
+            </button>
+        </form>
+
+        <section class="section" id="destaques" aria-labelledby="titulo-destaques">
+            <div class="section-header" data-reveal>
+                <h2 class="section-title" id="titulo-destaques">Em <span class="highlight">destaque</span></h2>
+                <div class="carousel-controls">
+                    <button type="button" class="round-button" id="carrossel-anterior" aria-label="Destaques anteriores">
+                        <span class="flip" data-icon="arrow"></span>
+                    </button>
+                    <button type="button" class="round-button" id="carrossel-proximo" aria-label="Próximos destaques">
+                        <span data-icon="arrow"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="carousel" id="carrossel-destaques" tabindex="0" aria-label="Eventos em destaque"></div>
+        </section>
+
+        <section class="section" id="eventos" aria-labelledby="titulo-eventos">
+            <div class="section-header" data-reveal>
+                <h2 class="section-title" id="titulo-eventos">Todos os <span class="highlight">eventos</span></h2>
+                <p class="results-count" id="contador-eventos" aria-live="polite"></p>
+            </div>
+
+            <nav class="filter" id="categorias" aria-label="Filtrar por categoria">
+                <ul class="filter-list" id="lista-categorias"></ul>
+            </nav>
+
+            <div class="event-grid" id="lista-eventos"></div>
+        </section>
+    </main>
 
     <footer class="footer">
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
+        <a class="footer-link" href="admin/login.html">Área do organizador</a>
     </footer>
 
-    <script src="./js/api.js"></script>
-    <script src="./js/home.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+    <script src="./supabase-credentials.js"></script>
+    <script src="./assets/js/supabaseClient.js"></script>
+    <script src="./assets/js/utils/dom.js"></script>
+    <script src="./assets/js/utils/text.js"></script>
+    <script src="./assets/js/motion.js"></script>
+    <script src="./js/services/catalogoService.js"></script>
+    <script src="./js/components/eventoView.js"></script>
+    <script src="./js/pages/home.js"></script>
 </body>
 
 </html>

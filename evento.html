@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Evento | Página de Eventos</title>
+    <title>Detalhes do evento | Eventos Fatec</title>
+    <meta name="description" content="Detalhes, local, horário e inscrição do evento.">
+    <meta name="color-scheme" content="dark light">
     <link rel="stylesheet" href="./assets/css/styles.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,48 +14,70 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet">
+
+    <!-- Tema: no <head> para aplicar antes da primeira pintura (sem "flash") -->
+    <script src="./assets/js/theme.js"></script>
 </head>
 
-<body>
-    <nav class="header-menu">
-        <img class="logo" alt="logotipo eventos fatec" title="Logotipo eventos fatec"
-            src="./assets/images/logotipo-eventos-fatec.png" />
+<body class="site">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <nav class="header-menu" aria-label="Principal">
+        <a href="index.html" class="brand">
+            <img class="logo" alt="Eventos Fatec — início" src="./assets/images/logotipo-eventos-fatec.png" />
+        </a>
         <ul class="navigation">
             <li class="item">
-                <a class="link" href="index.html">Eventos</a>
+                <a class="link" href="index.html">Início</a>
+            </li>
+            <li class="item">
+                <a class="link" href="index.html#eventos">Eventos</a>
             </li>
             <li class="item">
                 <a class="link" href="index.html#categorias">Categorias</a>
             </li>
             <li class="item">
-                <button class="call-to-action">Explorar <i>Eventos</i></button>
+                <a class="call-to-action" href="index.html#eventos">Explorar eventos</a>
             </li>
         </ul>
     </nav>
 
-    <main class="detail">
-        <nav class="breadcrumb">
+    <main id="conteudo" class="detail">
+        <nav class="breadcrumb" aria-label="Você está em">
             <a href="index.html">Eventos</a>
-            <span>/</span>
-            <span id="breadcrumb-titulo">Carregando...</span>
+            <span aria-hidden="true">/</span>
+            <span id="breadcrumb-titulo" aria-current="page">Carregando...</span>
         </nav>
 
-        <div id="detalhe-skeleton" class="detail-skeleton"></div>
+        <div id="detalhe-skeleton" class="detail-skeleton" aria-hidden="true">
+            <div class="detail-skeleton-cover"></div>
+            <span class="sk-line"></span>
+            <span class="sk-line sk-line--short"></span>
+        </div>
 
-        <div id="detalhe-conteudo" class="detail-content" hidden></div>
+        <div id="detalhe-conteudo" hidden></div>
 
         <div id="detalhe-nao-encontrado" class="empty-state" hidden>
-            <p>Evento não encontrado.</p>
-            <a class="btn-cta" href="index.html">Voltar para eventos</a>
+            <p class="empty-state-title">Evento não encontrado</p>
+            <p>O link pode estar incorreto ou o evento foi removido.</p>
+            <a class="btn-cta" href="index.html#eventos">Ver todos os eventos</a>
         </div>
     </main>
 
     <footer class="footer">
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
+        <a class="footer-link" href="admin/login.html">Área do organizador</a>
     </footer>
 
-    <script src="./js/api.js"></script>
-    <script src="./js/detalhe.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+    <script src="./supabase-credentials.js"></script>
+    <script src="./assets/js/supabaseClient.js"></script>
+    <script src="./assets/js/utils/dom.js"></script>
+    <script src="./assets/js/utils/text.js"></script>
+    <script src="./assets/js/motion.js"></script>
+    <script src="./js/services/catalogoService.js"></script>
+    <script src="./js/components/eventoView.js"></script>
+    <script src="./js/pages/evento.js"></script>
 </body>
 
 </html>

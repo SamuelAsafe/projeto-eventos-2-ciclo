@@ -17,6 +17,13 @@ const text = (function () {
         // sem timeZone: timestamptz é exibido no fuso de quem está vendo
     });
 
+    const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+        day: "numeric", month: "long", year: "numeric", timeZone: "UTC"
+    });
+    const weekdayFormatter = new Intl.DateTimeFormat("pt-BR", { weekday: "long", timeZone: "UTC" });
+    const dayFormatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", timeZone: "UTC" });
+    const monthShortFormatter = new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: "UTC" });
+
     /** "Curso de Banco de Dados!" → "curso-de-banco-de-dados" */
     function slugify(value) {
         return String(value ?? "")
@@ -43,5 +50,34 @@ const text = (function () {
         return Number.isNaN(date.getTime()) ? String(isoDateTime) : dateTimeFormatter.format(date);
     }
 
-    return Object.freeze({ slugify, formatDate, formatDateTime });
+    /** "2026-10-10" → "10 de outubro de 2026" */
+    function formatDateLong(isoDate) {
+        const date = new Date(isoDate ?? "");
+        return Number.isNaN(date.getTime()) ? String(isoDate ?? "") : longDateFormatter.format(date);
+    }
+
+    /** "2026-10-10" → { day: "10", month: "out", weekday: "sábado" } (para "selos" de data). */
+    function dateParts(isoDate) {
+        const date = new Date(isoDate ?? "");
+        if (Number.isNaN(date.getTime())) return { day: "--", month: "", weekday: "" };
+        return {
+            day: dayFormatter.format(date),
+            month: monthShortFormatter.format(date).replace(".", ""),
+            weekday: weekdayFormatter.format(date)
+        };
+    }
+
+    /** Data de hoje no fuso local, formato "YYYY-MM-DD" (comparável com colunas `date`). */
+    function todayIso() {
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    }
+
+    /** true se a data (YYYY-MM-DD) já passou. */
+    function isPast(isoDate) {
+        return Boolean(isoDate) && isoDate < todayIso();
+    }
+
+    return Object.freeze({ slugify, formatDate, formatDateTime, formatDateLong, dateParts, todayIso, isPast });
 })();

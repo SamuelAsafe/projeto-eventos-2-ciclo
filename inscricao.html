@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição | Página de Eventos</title>
+    <title>Inscrição | Eventos Fatec</title>
+    <meta name="description" content="Inscreva-se no evento da Fatec.">
+    <meta name="color-scheme" content="dark light">
     <link rel="stylesheet" href="./assets/css/styles.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,64 +14,138 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet">
+
+    <!-- Tema: no <head> para aplicar antes da primeira pintura (sem "flash") -->
+    <script src="./assets/js/theme.js"></script>
 </head>
 
-<body>
-    <nav class="header-menu">
-        <img class="logo" alt="logotipo eventos fatec" title="Logotipo eventos fatec"
-            src="./assets/images/logotipo-eventos-fatec.png" />
+<body class="site">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <nav class="header-menu" aria-label="Principal">
+        <a href="index.html" class="brand">
+            <img class="logo" alt="Eventos Fatec — início" src="./assets/images/logotipo-eventos-fatec.png" />
+        </a>
         <ul class="navigation">
             <li class="item">
-                <a class="link" href="index.html">Eventos</a>
+                <a class="link" href="index.html">Início</a>
+            </li>
+            <li class="item">
+                <a class="link" href="index.html#eventos">Eventos</a>
             </li>
             <li class="item">
                 <a class="link" href="index.html#categorias">Categorias</a>
             </li>
             <li class="item">
-                <button class="call-to-action">Explorar <i>Eventos</i></button>
+                <a class="call-to-action" href="index.html#eventos">Explorar eventos</a>
             </li>
         </ul>
     </nav>
 
-    <main class="subscription">
+    <main id="conteudo" class="subscription">
+        <nav class="breadcrumb" aria-label="Você está em">
+            <a href="index.html">Eventos</a>
+            <span aria-hidden="true">/</span>
+            <a id="breadcrumb-evento" href="index.html">Evento</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Inscrição</span>
+        </nav>
+
+        <div id="inscricao-carregando" class="detail-skeleton detail-skeleton--compact" aria-hidden="true">
+            <span class="sk-line"></span>
+            <span class="sk-line sk-line--short"></span>
+        </div>
+
         <div id="inscricao-vazio" class="empty-state" hidden>
-            <p>Nenhum evento selecionado.</p>
-            <a class="btn-cta" href="index.html">Ver eventos</a>
+            <p class="empty-state-title" id="inscricao-vazio-titulo">Nenhum evento selecionado</p>
+            <p id="inscricao-vazio-texto">Escolha um evento para se inscrever.</p>
+            <a class="btn-cta" href="index.html#eventos">Ver eventos</a>
         </div>
 
         <div id="inscricao-conteudo" class="subscription-content" hidden>
-            <section class="subscription-summary" id="resumo-evento"></section>
+            <aside class="subscription-summary" id="resumo-evento" data-reveal></aside>
 
-            <form class="subscription-form" id="form-inscricao" novalidate>
+            <form class="subscription-form" id="form-inscricao" novalidate data-reveal>
+                <div class="subscription-form-header">
+                    <h1 class="title">Garanta sua vaga</h1>
+                    <p>Preencha seus dados. Leva menos de um minuto.</p>
+                </div>
+
+                <p class="feedback" id="inscricao-feedback" role="alert" aria-live="assertive"></p>
+
                 <div class="form-field">
                     <label for="campo-nome">Nome completo</label>
-                    <input type="text" id="campo-nome" name="nome" placeholder="Digite seu nome" />
-                    <span class="form-error" id="erro-nome" hidden></span>
+                    <input type="text" id="campo-nome" name="nome" placeholder="Como no seu documento"
+                        autocomplete="name" maxlength="120" required />
+                    <span class="error">Informe seu nome completo.</span>
                 </div>
 
                 <div class="form-field">
                     <label for="campo-email">E-mail</label>
-                    <input type="email" id="campo-email" name="email" placeholder="Digite seu e-mail" />
-                    <span class="form-error" id="erro-email" hidden></span>
+                    <input type="email" id="campo-email" name="email" placeholder="voce@email.com"
+                        autocomplete="email" maxlength="254" required />
+                    <span class="error">Informe um e-mail válido.</span>
                 </div>
 
-                <button type="submit" class="call-to-action">Confirmar inscrição</button>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="campo-documento">CPF</label>
+                        <input type="text" id="campo-documento" name="documento" placeholder="000.000.000-00"
+                            inputmode="numeric" autocomplete="off" maxlength="14" required />
+                        <span class="error">Informe um CPF válido.</span>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="campo-nascimento">Data de nascimento</label>
+                        <input type="date" id="campo-nascimento" name="data_nascimento" autocomplete="bday" required />
+                        <span class="error">Informe sua data de nascimento.</span>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="campo-whatsapp">WhatsApp</label>
+                    <input type="tel" id="campo-whatsapp" name="whatsapp" placeholder="(15) 99999-9999"
+                        inputmode="tel" autocomplete="tel-national" maxlength="15" required />
+                    <span class="error">Informe um WhatsApp válido com DDD.</span>
+                </div>
+
+                <p class="privacy-note">Seus dados são usados apenas pela organização deste evento.</p>
+
+                <button type="submit" class="call-to-action" id="botao-inscrever">Confirmar inscrição</button>
             </form>
         </div>
 
-        <div id="inscricao-confirmada" class="subscription-confirmation" hidden>
-            <h1 class="title">Inscrição confirmada!</h1>
-            <p>Guarde seu código de confirmação: <strong id="codigo-confirmacao"></strong></p>
-            <a class="btn-cta" id="link-voltar-evento" href="index.html">Voltar para o evento</a>
-        </div>
+        <section id="inscricao-confirmada" class="subscription-confirmation" hidden aria-live="polite">
+            <svg class="success-check" viewBox="0 0 52 52" aria-hidden="true">
+                <circle cx="26" cy="26" r="24" />
+                <path d="M15 27l7 7 15-15" />
+            </svg>
+            <h1 class="title" tabindex="-1" id="confirmacao-titulo">Inscrição confirmada!</h1>
+            <p>Guarde seu código de confirmação:</p>
+            <strong class="confirmation-code" id="codigo-confirmacao"></strong>
+            <p class="confirmation-event" id="confirmacao-evento"></p>
+            <div class="confirmation-actions">
+                <a class="btn-cta" id="link-voltar-evento" href="index.html">Ver evento</a>
+                <a class="btn-ghost" href="index.html#eventos">Outros eventos</a>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
+        <a class="footer-link" href="admin/login.html">Área do organizador</a>
     </footer>
 
-    <script src="./js/api.js"></script>
-    <script src="./js/inscricao.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+    <script src="./supabase-credentials.js"></script>
+    <script src="./assets/js/supabaseClient.js"></script>
+    <script src="./assets/js/utils/dom.js"></script>
+    <script src="./assets/js/utils/text.js"></script>
+    <script src="./assets/js/utils/validation.js"></script>
+    <script src="./assets/js/motion.js"></script>
+    <script src="./js/services/catalogoService.js"></script>
+    <script src="./js/components/eventoView.js"></script>
+    <script src="./js/pages/inscricao.js"></script>
 </body>
 
 </html>
