@@ -1193,7 +1193,6 @@ button {
 .detail-subtitle {
     font-size: 15px;
     opacity: .9;
-    text-transform: capitalize;
 }
 
 .detail-columns {

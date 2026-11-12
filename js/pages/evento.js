@@ -14,6 +14,8 @@
 
     const { ICONS } = eventoView;
 
+    const capitalize = (value) => value ? value.charAt(0).toUpperCase() + value.slice(1) : "";
+
     function readId() {
         const id = new URLSearchParams(window.location.search).get("id");
         return /^\d+$/.test(id ?? "") ? id : null;
@@ -61,7 +63,7 @@
                             ${evento.destaque ? '<span class="tag tag--highlight">Destaque</span>' : ""}
                         </div>
                         <h1 class="detail-title">${dom.escapeHtml(evento.nome)}</h1>
-                        <p class="detail-subtitle">${dom.escapeHtml(weekday)}, ${dom.escapeHtml(text.formatDateLong(evento.data))}</p>
+                        <p class="detail-subtitle">${dom.escapeHtml(capitalize(weekday))}, ${dom.escapeHtml(text.formatDateLong(evento.data))}</p>
                     </div>
                 </header>
 
