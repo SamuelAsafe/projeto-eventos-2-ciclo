@@ -53,8 +53,10 @@
                 <h1>Usuários</h1>
                 <p>Controle quem tem acesso ao painel administrativo.</p>
             </div>
-            <a class="btn-cta" href="#form-usuario">Novo usuário</a>
+            <a class="btn-cta" id="novo-usuario" href="#form-usuario">Novo usuário</a>
         </div>
+
+        <p class="feedback" id="usuario-feedback" role="status" aria-live="polite"></p>
 
         <section class="admin-panel">
             <h2>Usuários cadastrados</h2>
@@ -70,62 +72,40 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Ana Ribeiro</td>
-                            <td>ana.ribeiro@fatec.sp.gov.br</td>
-                            <td><span class="badge badge-admin">Administrador</span></td>
-                            <td><span class="badge badge-active">Ativo</span></td>
-                            <td class="actions">
-                                <button type="button" class="btn-sm btn-edit">Editar</button>
-                                <button type="button" class="btn-sm btn-delete">Excluir</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Rafael Nunes</td>
-                            <td>rafael.nunes@fatec.sp.gov.br</td>
-                            <td><span class="badge badge-admin">Administrador</span></td>
-                            <td><span class="badge badge-active">Ativo</span></td>
-                            <td class="actions">
-                                <button type="button" class="btn-sm btn-edit">Editar</button>
-                                <button type="button" class="btn-sm btn-delete">Excluir</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Diretório Acadêmico</td>
-                            <td>diretorio@fatec.sp.gov.br</td>
-                            <td><span class="badge badge-user">Usuário</span></td>
-                            <td><span class="badge badge-inactive">Inativo</span></td>
-                            <td class="actions">
-                                <button type="button" class="btn-sm btn-edit">Editar</button>
-                                <button type="button" class="btn-sm btn-delete">Excluir</button>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody id="usuarios"></tbody>
                 </table>
             </div>
+
+            <div id="usuarios-paginacao"></div>
         </section>
 
         <section class="admin-panel" id="form-usuario">
-            <h2>Novo usuário</h2>
+            <h2 id="usuario-form-title">Novo usuário</h2>
 
-            <form class="admin-form" data-supabase-table="usuarios" novalidate>
+            <form class="admin-form" id="usuario-form" novalidate>
                 <div class="form-row">
                     <div class="form-field">
                         <label for="campo-nome-usuario">Nome completo</label>
-                        <input type="text" id="campo-nome-usuario" name="nome" placeholder="Ex: Ana Ribeiro" />
+                        <input type="text" id="campo-nome-usuario" name="nome" placeholder="Ex: Ana Ribeiro"
+                            maxlength="100" autocomplete="off" required />
+                        <span class="error">O nome é obrigatório</span>
                     </div>
 
                     <div class="form-field">
                         <label for="campo-email-usuario">E-mail</label>
-                        <input type="email" id="campo-email-usuario" name="email" placeholder="voce@fatec.sp.gov.br" />
+                        <input type="email" id="campo-email-usuario" name="email" placeholder="voce@fatec.sp.gov.br"
+                            autocomplete="off" required />
+                        <span class="error">O e-mail é obrigatório</span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-field">
                         <label for="campo-senha-usuario">Senha</label>
-                        <input type="password" id="campo-senha-usuario" name="senha" placeholder="Senha provisória" />
+                        <input type="password" id="campo-senha-usuario" name="senha" placeholder="Senha provisória"
+                            autocomplete="new-password" minlength="8" aria-describedby="ajuda-senha" />
+                        <small class="field-hint" id="ajuda-senha"></small>
+                        <span class="error">A senha é obrigatória</span>
                     </div>
 
                     <div class="form-field">
@@ -134,6 +114,7 @@
                             <option value="administrador">Administrador</option>
                             <option value="usuario">Usuário</option>
                         </select>
+                        <span class="error">Selecione um papel</span>
                     </div>
 
                     <div class="form-field">
@@ -142,10 +123,14 @@
                             <option value="ativo">Ativo</option>
                             <option value="inativo">Inativo</option>
                         </select>
+                        <span class="error">Selecione um status</span>
                     </div>
                 </div>
 
-                <button type="submit" class="call-to-action">Salvar usuário</button>
+                <div class="form-actions">
+                    <button type="submit" id="salvar-usuario" class="call-to-action">Salvar usuário</button>
+                    <button type="button" id="cancelar-edicao-usuario" class="btn-sm btn-edit hide">Cancelar edição</button>
+                </div>
             </form>
         </section>
     </main>
@@ -153,6 +138,12 @@
     <footer class="footer">
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
     </footer>
+
+    <script src="./js/utils/dom.js"></script>
+    <script src="./js/utils/validation.js"></script>
+    <script src="./js/utils/pagination.js"></script>
+    <script src="./js/services/usuariosService.js"></script>
+    <script src="./js/pages/usuarios.js"></script>
 </body>
 
 </html>

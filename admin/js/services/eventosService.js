@@ -27,6 +27,17 @@ const eventosService = (function () {
             return data ?? [];
         },
 
+        /** Lista enxuta para filtros/selects. */
+        async listOptions() {
+            const { data, error } = await window.supabaseClient
+                .from(TABLE)
+                .select("id, nome")
+                .order("nome", { ascending: true });
+
+            if (error) throw error;
+            return data ?? [];
+        },
+
         async create(payload) {
             const { data, error } = await window.supabaseClient
                 .from(TABLE)

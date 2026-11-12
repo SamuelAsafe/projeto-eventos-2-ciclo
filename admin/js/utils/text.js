@@ -11,6 +11,12 @@ const text = (function () {
         timeZone: "UTC" // datas "YYYY-MM-DD" são interpretadas em UTC; evita exibir o dia anterior
     });
 
+    const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short"
+        // sem timeZone: timestamptz é exibido no fuso de quem está vendo
+    });
+
     /** "Curso de Banco de Dados!" → "curso-de-banco-de-dados" */
     function slugify(value) {
         return String(value ?? "")
@@ -30,5 +36,12 @@ const text = (function () {
         return Number.isNaN(date.getTime()) ? String(isoDate) : dateFormatter.format(date);
     }
 
-    return Object.freeze({ slugify, formatDate });
+    /** "2026-09-02T17:32:00+00:00" → "02/09/2026, 14:32" (fuso local). */
+    function formatDateTime(isoDateTime) {
+        if (!isoDateTime) return "";
+        const date = new Date(isoDateTime);
+        return Number.isNaN(date.getTime()) ? String(isoDateTime) : dateTimeFormatter.format(date);
+    }
+
+    return Object.freeze({ slugify, formatDate, formatDateTime });
 })();
