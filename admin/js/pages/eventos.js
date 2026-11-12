@@ -1,6 +1,6 @@
 /*
  * Página de eventos do painel (admin/eventos.html).
- * Depende de: eventosService, categoriasService, dom, text.
+ * Depende de: eventosService, categoriasService, dom, text, validation.
  */
 (function eventosPage() {
     "use strict";
@@ -15,43 +15,29 @@
         feedback: document.getElementById("evento-feedback")
     };
 
-    /* ---------- Validação declarativa ---------- */
+    /* ---------- Validação (utils/validation.js) ---------- */
 
-    const asText = (input) => input.value.trim();
-    const asInteger = (input) => (input.value === "" ? null : Number(input.value));
+    const { read, rules } = validation;
+    const { required, minLength, nonNegativeInteger } = rules;
 
-    const required = (message) => (value) =>
-        value === null || value === "" ? message : null;
-
-    const minLength = (size, message) => (value) =>
-        typeof value === "string" && value.length < size ? message : null;
-
-    const nonNegativeInteger = (message) => (value) =>
-        value !== null && (!Number.isInteger(value) || value < 0) ? message : null;
-
-    /**
-     * Cada campo: id do input, chave enviada ao Supabase, como ler o valor
-     * e regras (executadas em ordem; a primeira que falhar define a mensagem).
-     * Regras recebem (valor, todosOsValores) para validações entre campos.
-     */
     const FIELDS = [
-        { id: "campo-titulo", key: "nome", read: asText,
+        { id: "campo-titulo", key: "nome", read: read.text,
           rules: [required("O nome é obrigatório"), minLength(3, "O nome deve ter ao menos 3 caracteres")] },
-        { id: "campo-categoria", key: "categoria_id", read: asText,
+        { id: "campo-categoria", key: "categoria_id", read: read.text,
           rules: [required("Selecione uma categoria")] },
-        { id: "campo-data", key: "data", read: asText,
+        { id: "campo-data", key: "data", read: read.text,
           rules: [required("A data é obrigatória")] },
-        { id: "campo-horario", key: "horario", read: asText,
+        { id: "campo-horario", key: "horario", read: read.text,
           rules: [required("O horário é obrigatório")] },
-        { id: "campo-local", key: "local", read: asText,
+        { id: "campo-local", key: "local", read: read.text,
           rules: [required("O local é obrigatório")] },
-        { id: "campo-endereco", key: "endereco", read: asText,
+        { id: "campo-endereco", key: "endereco", read: read.text,
           rules: [required("O endereço é obrigatório")] },
-        { id: "campo-organizador", key: "responsavel", read: asText,
+        { id: "campo-organizador", key: "responsavel", read: read.text,
           rules: [required("O organizador é obrigatório")] },
-        { id: "campo-vagas-totais", key: "vagas_totais", read: asInteger,
+        { id: "campo-vagas-totais", key: "vagas_totais", read: read.integer,
           rules: [required("Vagas totais é obrigatório"), nonNegativeInteger("Informe um número inteiro maior ou igual a 0")] },
-        { id: "campo-vagas-restantes", key: "vagas_restantes", read: asInteger,
+        { id: "campo-vagas-restantes", key: "vagas_restantes", read: read.integer,
           rules: [
               required("Vagas restantes é obrigatório"),
               nonNegativeInteger("Informe um número inteiro maior ou igual a 0"),
@@ -59,46 +45,15 @@
                   ? "Vagas restantes não pode ser maior que vagas totais"
                   : null
           ] },
-        { id: "campo-destaque", key: "destaque", read: (input) => input.checked, rules: [] },
-        { id: "campo-descricao", key: "descricao", read: asText,
+        { id: "campo-destaque", key: "destaque", read: read.checked, rules: [] },
+        { id: "campo-descricao", key: "descricao", read: read.text,
           rules: [required("Descrição completa é obrigatória")] }
     ];
 
-    /**
-     * Lê e valida o formulário inteiro, exibindo todos os erros de uma vez.
-     * @returns {object|null} payload pronto para inserir, ou null se inválido
-     */
+    /** @returns {object|null} payload pronto para inserir, ou null se inválido */
     function readForm() {
-        const values = {};
-        const inputs = {};
-
-        FIELDS.forEach((field) => {
-            inputs[field.key] = document.getElementById(field.id);
-            values[field.key] = field.read(inputs[field.key]);
-        });
-
-        let firstInvalid = null;
-
-        FIELDS.forEach((field) => {
-            const input = inputs[field.key];
-            const message = field.rules
-                .map((rule) => rule(values[field.key], values))
-                .find(Boolean);
-
-            if (message) {
-                dom.showFieldError(input, message);
-                firstInvalid ??= input;
-            } else {
-                dom.clearFieldError(input);
-            }
-        });
-
-        if (firstInvalid) {
-            firstInvalid.focus();
-            return null;
-        }
-
-        return { ...values, slug: text.slugify(values.nome) };
+        const values = validation.validateForm(FIELDS);
+        return values ? { ...values, slug: text.slugify(values.nome) } : null;
     }
 
     /* ---------- Tabela ---------- */

@@ -39,12 +39,15 @@ const eventosService = (function () {
         },
 
         async remove(id) {
-            const { error } = await window.supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from(TABLE)
                 .delete()
-                .eq("id", id);
+                .eq("id", id)
+                .select("id");
 
             if (error) throw error;
+            // Sem erro e sem linhas = registro inexistente ou bloqueado pelo RLS.
+            if (!data?.length) throw new Error("Nenhum evento foi excluído (inexistente ou sem permissão).");
         }
     });
 })();

@@ -984,3 +984,24 @@ button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* ---------- Formulários do painel ---------- */
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.form-actions .call-to-action {
+    flex: 1;
+}
+
+.form-actions .hide {
+    display: none;
+}
+
+.field-hint {
+    color: var(--text-gray);
+    font-size: 12px;
+}
