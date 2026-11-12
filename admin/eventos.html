@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-auth="required">
 
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet">
+
+    <!-- Autenticação: carregada no <head> para validar a sessão antes de exibir a página -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+    <script src="../supabase-credentials.js"></script>
+    <script src="./js/supabaseClient.js"></script>
+    <script src="./js/services/authService.js"></script>
+    <script src="./js/guard.js"></script>
 </head>
 
 <body>
@@ -35,7 +42,7 @@
                 <a class="link" href="usuarios.html">Usuários</a>
             </li>
             <li class="item">
-                <a class="link" href="login.html">Sair</a>
+                <a class="link" id="logout" href="login.html">Sair</a>
             </li>
         </ul>
     </nav>
@@ -44,10 +51,12 @@
         <div class="admin-header">
             <div>
                 <h1>Eventos</h1>
-                <p>Gerencie os eventos cadastrados. Protótipo estático, sem integração ainda.</p>
+                <p>Gerencie os eventos cadastrados.</p>
             </div>
             <a class="btn-cta" href="#form-evento">Novo evento</a>
         </div>
+
+        <p class="feedback" id="evento-feedback" role="status" aria-live="polite"></p>
 
         <section class="admin-panel">
             <h2>Eventos cadastrados</h2>
@@ -64,9 +73,7 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="events">
-                        
-                    </tbody>
+                    <tbody id="events"></tbody>
                 </table>
             </div>
         </section>
@@ -74,7 +81,7 @@
         <section class="admin-panel" id="form-evento">
             <h2>Novo evento</h2>
 
-            <form class="admin-form" data-supabase-table="eventos" novalidate>
+            <form class="admin-form" id="evento-form" novalidate>
                 <div class="form-field">
                     <label for="campo-titulo">Nome do evento</label>
                     <input type="text" id="campo-titulo" name="titulo" placeholder="Ex: Curso de Banco de Dados" />
@@ -84,9 +91,10 @@
                 <div class="form-row">
                     <div class="form-field">
                         <label for="campo-categoria">Categoria</label>
-                        <select id="campo-categoria" name="categoria">
-                            
+                        <select id="campo-categoria" name="categoria" required>
+                            <option value="" disabled selected>Carregando categorias...</option>
                         </select>
+                        <span class="error">Selecione uma categoria</span>
                     </div>
 
                     <div class="form-field">
@@ -153,7 +161,7 @@
                     <span class="error">Descrição completa é obrigatória</span>
                 </div>
 
-                <button type="button" id="salvar-evento" class="call-to-action">Salvar evento</button>
+                <button type="submit" id="salvar-evento" class="call-to-action">Salvar evento</button>
             </form>
         </section>
     </main>
@@ -162,11 +170,11 @@
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabase-credentials.js"></script>
-    <script src="./js/supabaseClient.js"></script>
-    <script src="./js/categorias.js"></script>
-    <script src="./js/eventos.js"></script>
+    <script src="./js/utils/dom.js"></script>
+    <script src="./js/utils/text.js"></script>
+    <script src="./js/services/categoriasService.js"></script>
+    <script src="./js/services/eventosService.js"></script>
+    <script src="./js/pages/eventos.js"></script>
 </body>
 
 </html>

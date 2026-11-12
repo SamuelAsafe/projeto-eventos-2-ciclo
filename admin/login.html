@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-auth="guest">
 
 <head>
     <meta charset="UTF-8">
@@ -30,17 +30,21 @@
         <p>Acesso restrito à equipe organizadora dos eventos.</p>
 
         <div class="admin-panel">
-            <form class="admin-form" id="form-login" data-supabase-auth="signInWithPassword" novalidate>
+            <p class="feedback" id="login-feedback" role="alert" aria-live="assertive"></p>
+
+            <form class="admin-form" id="form-login" novalidate>
                 <div class="form-field">
                     <label for="campo-email">E-mail</label>
                     <input type="email" id="campo-email" name="email" placeholder="voce@fatec.sp.gov.br"
-                        autocomplete="username" />
+                        autocomplete="username" required />
+                    <span class="error">Informe o e-mail.</span>
                 </div>
 
                 <div class="form-field">
                     <label for="campo-senha">Senha</label>
                     <input type="password" id="campo-senha" name="senha" placeholder="Sua senha"
-                        autocomplete="current-password" />
+                        autocomplete="current-password" required />
+                    <span class="error">Informe a senha.</span>
                 </div>
 
                 <button type="submit" class="call-to-action">Entrar</button>
@@ -52,9 +56,12 @@
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
     </footer>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
-    <!-- <script src="./js/supabaseClient.js"></script> -->
-    <!-- <script src="./js/auth.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+    <script src="../supabase-credentials.js"></script>
+    <script src="./js/supabaseClient.js"></script>
+    <script src="./js/services/authService.js"></script>
+    <script src="./js/utils/dom.js"></script>
+    <script src="./js/pages/login.js"></script>
 </body>
 
 </html>

@@ -945,3 +945,42 @@ body {
 .show {
     display: block;
 }
+/* ---------- Autenticação ---------- */
+
+/* Esconde páginas protegidas até o guard.js confirmar a sessão (evita "flash" de conteúdo). */
+html[data-auth="required"] body {
+    visibility: hidden;
+}
+
+/* ---------- Feedback de ações (sucesso/erro) ---------- */
+
+.feedback {
+    display: none;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    text-align: left;
+}
+
+.feedback.show {
+    display: block;
+    margin: 0 0 16px;
+}
+
+/* Seletores compostos para vencer regras de contexto (ex.: `.login p`). */
+.feedback.feedback-success {
+    color: #7ee2a8;
+    background-color: rgba(46, 160, 67, 0.15);
+    border: 1px solid rgba(46, 160, 67, 0.5);
+}
+
+.feedback.feedback-error {
+    color: #ff8a8a;
+    background-color: rgba(248, 81, 73, 0.15);
+    border: 1px solid rgba(248, 81, 73, 0.5);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-auth="required">
 
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet">
+
+    <!-- Autenticação: carregada no <head> para validar a sessão antes de exibir a página -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+    <script src="../supabase-credentials.js"></script>
+    <script src="./js/supabaseClient.js"></script>
+    <script src="./js/services/authService.js"></script>
+    <script src="./js/guard.js"></script>
 </head>
 
 <body>
@@ -35,7 +42,7 @@
                 <a class="link active" href="usuarios.html">Usuários</a>
             </li>
             <li class="item">
-                <a class="link" href="login.html">Sair</a>
+                <a class="link" id="logout" href="login.html">Sair</a>
             </li>
         </ul>
     </nav>
@@ -146,10 +153,6 @@
     <footer class="footer">
         <p>© 2026 Eventos Fatec — Projeto de Desenvolvimento Web, 2º ciclo.</p>
     </footer>
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
-    <!-- <script src="./js/supabaseClient.js"></script> -->
-    <!-- <script src="./js/usuarios.js"></script> -->
 </body>
 
 </html>
