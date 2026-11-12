@@ -38,6 +38,31 @@ const eventosService = (function () {
             return data ?? [];
         },
 
+        /** Evento completo para preencher o formulário de edição. */
+        async getById(id) {
+            const { data, error } = await window.supabaseClient
+                .from(TABLE)
+                .select(`id, nome, categoria_id, data, horario, local, endereco, responsavel,
+                         vagas_totais, vagas_restantes, destaque, descricao`)
+                .eq("id", id)
+                .single();
+
+            if (error) throw error;
+            return data;
+        },
+
+        async update(id, payload) {
+            const { data, error } = await window.supabaseClient
+                .from(TABLE)
+                .update(payload)
+                .eq("id", id)
+                .select("id")
+                .single(); // sem linha (RLS/inexistente) → erro, em vez de "sucesso" silencioso
+
+            if (error) throw error;
+            return data;
+        },
+
         async create(payload) {
             const { data, error } = await window.supabaseClient
                 .from(TABLE)

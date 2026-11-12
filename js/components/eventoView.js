@@ -48,6 +48,24 @@ const eventoView = (function () {
         return { percent, label, status: percent >= ULTIMAS_VAGAS_PERCENT ? "ultimas" : "aberto", aberto: true };
     }
 
+    /**
+     * Botão de inscrição conforme a situação do evento.
+     * Aberto → link para a inscrição. Encerrado/esgotado → botão desabilitado.
+     */
+    function inscricaoCta(evento, { block = false, extraClass = "" } = {}) {
+        const info = situacao(evento);
+        const classes = `btn-cta${block ? " btn-cta--block" : ""}${extraClass ? ` ${extraClass}` : ""}`;
+
+        if (info.aberto) {
+            return `<a class="${classes}" href="inscricao.html?id=${encodeURIComponent(evento.id)}">
+                Inscrever-se ${ICONS.arrow}
+            </a>`;
+        }
+
+        const label = info.status === "encerrado" ? "Inscrição encerrada" : "Vagas esgotadas";
+        return `<button type="button" class="${classes}" disabled>${label}</button>`;
+    }
+
     function dateBadge(isoDate) {
         const { day, month } = text.dateParts(isoDate);
         return `
@@ -109,6 +127,9 @@ const eventoView = (function () {
                         ${progress(evento, { compact: true })}
                     </div>
                 </a>
+                <div class="event-actions">
+                    ${inscricaoCta(evento, { block: true, extraClass: "btn-cta--sm" })}
+                </div>
             </article>
         `;
     }
@@ -153,5 +174,5 @@ const eventoView = (function () {
         });
     }
 
-    return Object.freeze({ ICONS, accentStyle, situacao, dateBadge, progress, card, skeletonCards, hydrateIcons, updateCapacity });
+    return Object.freeze({ ICONS, accentStyle, situacao, inscricaoCta, dateBadge, progress, card, skeletonCards, hydrateIcons, updateCapacity });
 })();

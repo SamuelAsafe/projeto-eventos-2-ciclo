@@ -1,6 +1,7 @@
 /*
  * Página de categorias do painel (admin/categorias.html) — CRUD completo.
- * Depende de: categoriasService, dom, text, validation.
+ * Criar/editar acontecem em modal (utils/modal.js), com o mesmo formulário.
+ * Depende de: categoriasService, dom, text, validation, modal.
  */
 (function categoriasPage() {
     "use strict";
@@ -13,12 +14,11 @@
     const elements = {
         tableBody: document.getElementById("categorias"),
         form: document.getElementById("categoria-form"),
-        formTitle: document.getElementById("categoria-form-title"),
+        formFeedback: document.getElementById("categoria-form-feedback"),
         nameInput: document.getElementById("campo-nome-categoria"),
         slugInput: document.getElementById("campo-slug-categoria"),
         colorInput: document.getElementById("campo-cor-categoria"),
         submitButton: document.getElementById("salvar-categoria"),
-        cancelButton: document.getElementById("cancelar-edicao"),
         newButton: document.getElementById("nova-categoria"),
         feedback: document.getElementById("categoria-feedback")
     };
@@ -26,7 +26,8 @@
     const state = {
         categorias: new Map(), // id → categoria (cache da última listagem)
         editingId: null,       // null = criando; id = editando
-        slugTouched: false     // usuário editou o slug manualmente?
+        slugTouched: false,    // usuário editou o slug manualmente?
+        dialog: null           // controle do modal aberto
     };
 
     /* ---------- Validação (utils/validation.js) ---------- */
@@ -119,18 +120,29 @@
         elements.form.reset();
         elements.colorInput.value = DEFAULT_COLOR;
         validation.clearForm(FIELDS);
+        dom.hideFeedback(elements.formFeedback);
 
         state.editingId = null;
         state.slugTouched = false;
+    }
 
-        elements.formTitle.textContent = "Nova categoria";
-        elements.submitButton.textContent = "Salvar categoria";
-        elements.cancelButton.classList.add("hide");
+    function openForm({ title, submitLabel }) {
+        elements.submitButton.textContent = submitLabel;
+        dom.hideFeedback(elements.feedback);
+        state.dialog = modal.form({ title, form: elements.form, size: "md" });
+        state.dialog.closed.then(() => {
+            state.dialog = null;
+            state.editingId = null;
+        });
+    }
+
+    function openCreate() {
+        resetForm();
+        openForm({ title: "Nova categoria", submitLabel: "Cadastrar categoria" });
     }
 
     function startEditing(categoria) {
-        validation.clearForm(FIELDS);
-        dom.hideFeedback(elements.feedback);
+        resetForm();
 
         state.editingId = categoria.id;
         // Slug personalizado (diferente do gerado pelo nome) não deve ser sobrescrito ao editar o nome.
@@ -140,12 +152,7 @@
         elements.slugInput.value = categoria.slug ?? "";
         elements.colorInput.value = HEX_COLOR_PATTERN.test(categoria.cor ?? "") ? expandHex(categoria.cor) : DEFAULT_COLOR;
 
-        elements.formTitle.textContent = `Editar categoria: ${categoria.nome}`;
-        elements.submitButton.textContent = "Salvar alterações";
-        elements.cancelButton.classList.remove("hide");
-
-        elements.form.scrollIntoView({ behavior: "smooth", block: "start" });
-        elements.nameInput.focus({ preventScroll: true });
+        openForm({ title: "Editar categoria", submitLabel: "Salvar alterações" });
     }
 
     /** <input type="color"> só aceita #rrggbb; converte "#000" → "#000000". */
@@ -167,7 +174,7 @@
 
     async function handleSubmit(event) {
         event.preventDefault();
-        dom.hideFeedback(elements.feedback);
+        dom.hideFeedback(elements.formFeedback);
 
         const payload = validation.validateForm(FIELDS);
         if (!payload) return;
@@ -184,21 +191,22 @@
                 await categoriasService.create(payload);
             }
 
-            dom.setLoading(elements.submitButton, false);
-            resetForm();
+            state.dialog?.close("saved");
             dom.showFeedback(elements.feedback, "success",
                 isEditing ? "Categoria atualizada com sucesso!" : "Categoria cadastrada com sucesso!");
             await loadCategorias();
         } catch (error) {
             console.error("[categorias] Falha ao salvar:", error);
-            dom.setLoading(elements.submitButton, false);
 
             if (error?.code === categoriasService.ERROR_CODES.UNIQUE_VIOLATION) {
                 dom.showFieldError(elements.slugInput, "Já existe uma categoria com este slug");
                 elements.slugInput.focus();
             }
-            dom.showFeedback(elements.feedback, "error",
+            // Modal continua aberto com os dados, para corrigir e tentar de novo.
+            dom.showFeedback(elements.formFeedback, "error",
                 describeError(error, "Não foi possível salvar a categoria. Tente novamente."));
+        } finally {
+            dom.setLoading(elements.submitButton, false);
         }
     }
 
@@ -216,7 +224,6 @@
 
         try {
             await categoriasService.remove(categoria.id);
-            if (String(state.editingId) === String(categoria.id)) resetForm();
             dom.showFeedback(elements.feedback, "success", "Categoria excluída.");
             await loadCategorias();
         } catch (error) {
@@ -243,11 +250,9 @@
         elements.form.addEventListener("submit", handleSubmit);
         elements.nameInput.addEventListener("input", handleNameInput);
         elements.slugInput.addEventListener("input", handleSlugInput);
-        elements.cancelButton.addEventListener("click", resetForm);
-        elements.newButton.addEventListener("click", resetForm);
+        elements.newButton.addEventListener("click", openCreate);
         elements.tableBody.addEventListener("click", handleTableClick);
 
-        resetForm();
         loadCategorias();
     }
 

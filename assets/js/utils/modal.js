@@ -1,25 +1,23 @@
 /*
- * Modal acessível baseado em <dialog> (substitui window.confirm/alert).
+ * Modal acessível baseado em <dialog> (substitui window.confirm/alert e
+ * hospeda formulários).
  *
- *   const ok = await modal.confirm({
- *       title: "Excluir evento?",
- *       message: 'O evento "X" será removido.',
- *       confirmLabel: "Excluir",
- *       tone: "danger"
- *   });
+ *   // Confirmação
+ *   const ok = await modal.confirm({ title: "Excluir evento?", message: "...", confirmLabel: "Excluir" });
  *
+ *   // Mensagem com ações
  *   const value = await modal.show({
- *       title: "Inscrição confirmada!",
- *       content: elementoDom,              // conteúdo customizado (opcional)
- *       tone: "success",
- *       actions: [
- *           { label: "Ver evento", href: "evento.html?id=1", variant: "primary" },
- *           { label: "Fechar", value: "fechar", variant: "ghost" }
- *       ]
+ *       title: "Inscrição confirmada!", content: elementoDom, tone: "success",
+ *       actions: [{ label: "Ver evento", href: "...", variant: "primary" }, { label: "Fechar", value: "fechar" }]
  *   });
+ *
+ *   // Formulário: o modal NÃO fecha sozinho; a página chama ctrl.close() após salvar.
+ *   const ctrl = modal.form({ title: "Editar evento", form: formElement, size: "lg" });
+ *   ...await salvar(); ctrl.close("salvo");
+ *   // Qualquer elemento com [data-modal-close] dentro do conteúdo fecha (ex.: "Cancelar").
  *
  * - <dialog>.showModal(): foco preso no modal, resto da página inerte.
- * - Esc e clique no fundo fecham (retornam null), salvo `dismissible: false`.
+ * - Esc e clique no fundo fecham (valor null), salvo `dismissible: false`.
  * - Foco volta para o elemento que abriu o modal.
  * - Textos (title/message/labels) entram via textContent (sem risco de XSS).
  */
@@ -36,15 +34,17 @@ const modal = (function () {
     };
 
     let dialog = null;
-    let current = null; // { resolve, returnFocus, dismissible }
+    let current = null; // { token, resolve, returnFocus, dismissible }
 
     function build() {
         dialog = document.createElement("dialog");
         dialog.className = "modal";
         dialog.setAttribute("aria-labelledby", "modal-title");
-        dialog.setAttribute("aria-describedby", "modal-message");
         dialog.innerHTML = `
             <div class="modal-card">
+                <button type="button" class="modal-close" data-modal-close aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                </button>
                 <div class="modal-icon" aria-hidden="true"></div>
                 <h2 class="modal-title" id="modal-title"></h2>
                 <p class="modal-message" id="modal-message"></p>
@@ -57,26 +57,37 @@ const modal = (function () {
         // Esc → fecha (se permitido), sempre com animação.
         dialog.addEventListener("cancel", (event) => {
             event.preventDefault();
-            if (current?.dismissible) close(null);
+            if (current?.dismissible) close(current.token, null);
         });
 
         // Clique no fundo (fora do cartão) → fecha.
         dialog.addEventListener("click", (event) => {
-            if (event.target === dialog && current?.dismissible) close(null);
-        });
+            if (!current) return;
 
-        dialog.querySelector(".modal-actions").addEventListener("click", (event) => {
-            const button = event.target.closest("button[data-value]");
-            if (button) close(button.dataset.value);
+            if (event.target === dialog && current.dismissible) {
+                close(current.token, null);
+                return;
+            }
+
+            const action = event.target.closest(".modal-actions button[data-value]");
+            if (action) {
+                close(current.token, action.dataset.value);
+                return;
+            }
+
+            if (event.target.closest("[data-modal-close]")) close(current.token, null);
         });
     }
 
-    function close(value) {
-        if (!current) return;
+    function close(token, value) {
+        if (!current || current.token !== token) return; // já fechado / outro modal
         const { resolve, returnFocus } = current;
         current = null;
 
+        let done = false;
         const finish = () => {
+            if (done) return;
+            done = true;
             dialog.classList.remove("is-closing");
             dialog.close();
             returnFocus?.focus?.({ preventScroll: true });
@@ -84,10 +95,8 @@ const modal = (function () {
         };
 
         dialog.classList.add("is-closing");
-        let done = false;
-        const once = () => { if (!done) { done = true; finish(); } };
-        dialog.addEventListener("animationend", once, { once: true });
-        setTimeout(once, CLOSE_ANIMATION_FALLBACK_MS);
+        dialog.addEventListener("animationend", finish, { once: true });
+        setTimeout(finish, CLOSE_ANIMATION_FALLBACK_MS);
     }
 
     function renderAction(action) {
@@ -112,20 +121,38 @@ const modal = (function () {
     }
 
     /**
-     * Abre o modal.
-     * @returns {Promise<string|null>} `value` da ação clicada, ou null se dispensado.
+     * Núcleo: abre o modal e devolve um controle.
+     * @returns {{ close: (value?: any) => void, closed: Promise<any> }}
      */
-    function show({ title, message = "", content = null, tone = "info", actions = [], dismissible = true }) {
+    function open({
+        title,
+        message = "",
+        content = null,
+        tone = "info",
+        icon = true,
+        actions = [],
+        dismissible = true,
+        size = "sm",
+        initialFocus = null
+    }) {
         if (!dialog) build();
-        if (current) close(null); // um modal por vez
+        if (current) close(current.token, null); // um modal por vez
 
+        const token = Symbol("modal");
         dialog.dataset.tone = tone;
-        dialog.querySelector(".modal-icon").innerHTML = ICONS[tone] ?? ICONS.info;
+        dialog.dataset.size = size;
+
+        const iconEl = dialog.querySelector(".modal-icon");
+        iconEl.innerHTML = icon ? (ICONS[tone] ?? ICONS.info) : "";
+
         dialog.querySelector(".modal-title").textContent = title ?? "";
+        dialog.querySelector(".modal-close").hidden = !dismissible;
 
         const messageEl = dialog.querySelector(".modal-message");
         messageEl.textContent = message;
         messageEl.hidden = !message;
+        if (message) dialog.setAttribute("aria-describedby", "modal-message");
+        else dialog.removeAttribute("aria-describedby");
 
         const contentEl = dialog.querySelector(".modal-content");
         contentEl.replaceChildren(...(content ? [content] : []));
@@ -133,18 +160,28 @@ const modal = (function () {
 
         const actionsEl = dialog.querySelector(".modal-actions");
         actionsEl.replaceChildren(...actions.map(renderAction));
+        actionsEl.hidden = actions.length === 0;
 
-        return new Promise((resolve) => {
-            current = { resolve, returnFocus: document.activeElement, dismissible };
-            dialog.showModal();
-            (actionsEl.querySelector("[autofocus]") ?? actionsEl.firstElementChild)?.focus();
+        const closed = new Promise((resolve) => {
+            current = { token, resolve, returnFocus: document.activeElement, dismissible };
         });
+
+        dialog.showModal();
+        const focusTarget = initialFocus
+            ?? actionsEl.querySelector("[autofocus]")
+            ?? contentEl.querySelector("input:not([type=hidden]), select, textarea")
+            ?? actionsEl.firstElementChild;
+        focusTarget?.focus();
+
+        return Object.freeze({ close: (value = null) => close(token, value), closed });
     }
 
-    /**
-     * Confirmação sim/não.
-     * @returns {Promise<boolean>}
-     */
+    /** Mensagem com ações. @returns {Promise<string|null>} */
+    function show(options) {
+        return open(options).closed;
+    }
+
+    /** Confirmação sim/não. @returns {Promise<boolean>} */
     async function confirm({ title, message, confirmLabel = "Confirmar", cancelLabel = "Cancelar", tone = "danger" }) {
         const value = await show({
             title,
@@ -159,5 +196,13 @@ const modal = (function () {
         return value === "confirm";
     }
 
-    return Object.freeze({ show, confirm });
+    /**
+     * Hospeda um formulário. Não fecha ao enviar: a página valida/salva e chama close().
+     * @param {{ title: string, form: HTMLElement, size?: "sm"|"md"|"lg" }} options
+     */
+    function form({ title, form: formElement, size = "md" }) {
+        return open({ title, content: formElement, icon: false, size, tone: "form" });
+    }
+
+    return Object.freeze({ show, confirm, form });
 })();

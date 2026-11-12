@@ -1099,6 +1099,22 @@ button {
     }
 }
 
+.event-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.event-actions {
+    padding: 0 4px;
+    margin-top: auto;
+}
+
+.btn-cta--sm {
+    padding: 10px 18px;
+    font-size: 13px;
+}
+
 .event-card.is-closed .event-cover {
     filter: grayscale(.85);
 }
@@ -1895,7 +1911,88 @@ html[data-auth="required"] body {
     }
 }
 
+.modal[data-size="md"] {
+    max-width: min(94vw, 600px);
+}
+
+.modal[data-size="lg"] {
+    max-width: min(94vw, 860px);
+}
+
+/* Modal com formulário: alinhado à esquerda e com rolagem interna se não couber */
+.modal[data-tone="form"] {
+    .modal-card {
+        align-items: stretch;
+        text-align: left;
+        max-height: calc(100dvh - 32px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 28px clamp(20px, 3vw, 32px);
+    }
+
+    .modal-title {
+        padding-right: 40px;
+    }
+
+    .modal-content {
+        margin-top: 4px;
+    }
+
+    .form-actions {
+        position: sticky;
+        bottom: -28px;
+        margin: 8px calc(-1 * clamp(20px, 3vw, 32px)) -28px;
+        padding: 16px clamp(20px, 3vw, 32px) 24px;
+        background: linear-gradient(transparent, var(--color-surface) 28%);
+        justify-content: flex-end;
+
+        .btn-ghost {
+            flex: 0 0 auto;
+        }
+
+        .call-to-action {
+            flex: 0 1 220px;
+        }
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background-color var(--duration-fast), color var(--duration-fast), transform var(--duration-fast) var(--ease-out);
+
+    &:hover {
+        background-color: var(--color-surface-2);
+        color: var(--color-text);
+        transform: rotate(90deg);
+    }
+
+    &[hidden] {
+        display: none;
+    }
+
+    svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+    }
+}
+
 .modal-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1972,6 +2069,10 @@ html[data-auth="required"] body {
     &[hidden] {
         display: none;
     }
+}
+
+.modal-actions[hidden] {
+    display: none;
 }
 
 .modal-actions {

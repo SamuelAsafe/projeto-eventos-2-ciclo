@@ -1,6 +1,7 @@
 /*
  * Página de usuários do painel (admin/usuarios.html) — CRUD de contas do Supabase Auth.
- * Depende de: usuariosService, authService, dom, validation, pagination.
+ * Criar/editar acontecem em modal (utils/modal.js).
+ * Depende de: usuariosService, authService, dom, validation, pagination, modal.
  */
 (function usuariosPage() {
     "use strict";
@@ -23,7 +24,7 @@
         tableBody: document.getElementById("usuarios"),
         pagination: document.getElementById("usuarios-paginacao"),
         form: document.getElementById("usuario-form"),
-        formTitle: document.getElementById("usuario-form-title"),
+        formFeedback: document.getElementById("usuario-form-feedback"),
         nameInput: document.getElementById("campo-nome-usuario"),
         emailInput: document.getElementById("campo-email-usuario"),
         passwordInput: document.getElementById("campo-senha-usuario"),
@@ -31,7 +32,6 @@
         roleSelect: document.getElementById("campo-papel-usuario"),
         statusSelect: document.getElementById("campo-status-usuario"),
         submitButton: document.getElementById("salvar-usuario"),
-        cancelButton: document.getElementById("cancelar-edicao-usuario"),
         newButton: document.getElementById("novo-usuario"),
         feedback: document.getElementById("usuario-feedback")
     };
@@ -40,6 +40,7 @@
         page: 1,
         usuarios: new Map(), // id → usuário da página atual
         editingId: null,
+        dialog: null, // controle do modal aberto
         currentUserId: null
     };
 
@@ -142,40 +143,46 @@
     function resetForm() {
         elements.form.reset();
         validation.clearForm(FIELDS);
+        dom.hideFeedback(elements.formFeedback);
         state.editingId = null;
+    }
 
-        elements.formTitle.textContent = "Novo usuário";
-        elements.submitButton.textContent = "Salvar usuário";
-        elements.passwordInput.placeholder = "Senha provisória";
+    function openForm({ title, submitLabel, editing }) {
+        elements.submitButton.textContent = submitLabel;
+        elements.passwordInput.placeholder = editing ? "Deixe em branco para manter a atual" : "Senha provisória";
         elements.passwordInput.autocomplete = "new-password";
-        elements.passwordHint.textContent = `Mínimo de ${MIN_PASSWORD} caracteres. Repasse ao usuário com segurança.`;
-        elements.cancelButton.classList.add("hide");
+        elements.passwordHint.textContent = editing
+            ? "Preencha apenas para definir uma nova senha."
+            : `Mínimo de ${MIN_PASSWORD} caracteres. Repasse ao usuário com segurança.`;
+
+        dom.hideFeedback(elements.feedback);
+        state.dialog = modal.form({ title, form: elements.form, size: "md" });
+        state.dialog.closed.then(() => {
+            state.dialog = null;
+            state.editingId = null;
+        });
+    }
+
+    function openCreate() {
+        resetForm();
+        openForm({ title: "Novo usuário", submitLabel: "Criar usuário", editing: false });
     }
 
     function startEditing(usuario) {
-        validation.clearForm(FIELDS);
-        dom.hideFeedback(elements.feedback);
+        resetForm();
         state.editingId = usuario.id;
 
         elements.nameInput.value = usuario.nome ?? "";
         elements.emailInput.value = usuario.email ?? "";
-        elements.passwordInput.value = "";
         elements.roleSelect.value = usuario.papel in PAPEIS ? usuario.papel : "usuario";
         elements.statusSelect.value = usuario.status in STATUS ? usuario.status : "ativo";
 
-        elements.formTitle.textContent = `Editar usuário: ${usuario.nome || usuario.email}`;
-        elements.submitButton.textContent = "Salvar alterações";
-        elements.passwordInput.placeholder = "Deixe em branco para manter a atual";
-        elements.passwordHint.textContent = "Preencha apenas para definir uma nova senha.";
-        elements.cancelButton.classList.remove("hide");
-
-        elements.form.scrollIntoView({ behavior: "smooth", block: "start" });
-        elements.nameInput.focus({ preventScroll: true });
+        openForm({ title: "Editar usuário", submitLabel: "Salvar alterações", editing: true });
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
-        dom.hideFeedback(elements.feedback);
+        dom.hideFeedback(elements.formFeedback);
 
         const values = validation.validateForm(FIELDS);
         if (!values) return;
@@ -194,7 +201,7 @@
             }
 
             dom.setLoading(elements.submitButton, false);
-            resetForm();
+            state.dialog?.close("saved");
             dom.showFeedback(elements.feedback, "success",
                 isEditing ? "Usuário atualizado com sucesso!" : "Usuário criado com sucesso!");
             await loadPage(isEditing ? state.page : 1);
@@ -206,7 +213,8 @@
                 dom.showFieldError(elements.emailInput, "Já existe um usuário com este e-mail");
                 elements.emailInput.focus();
             }
-            dom.showFeedback(elements.feedback, "error", error.message);
+            // Modal continua aberto com os dados, para corrigir e tentar de novo.
+            dom.showFeedback(elements.formFeedback, "error", error.message);
         }
     }
 
@@ -225,7 +233,6 @@
 
         try {
             await usuariosService.remove(usuario.id);
-            if (state.editingId === usuario.id) resetForm();
             dom.showFeedback(elements.feedback, "success", "Usuário excluído.");
             await loadPage();
         } catch (error) {
@@ -248,10 +255,8 @@
 
     async function init() {
         elements.form.addEventListener("submit", handleSubmit);
-        elements.cancelButton.addEventListener("click", resetForm);
-        elements.newButton.addEventListener("click", resetForm);
+        elements.newButton.addEventListener("click", openCreate);
         elements.tableBody.addEventListener("click", handleTableClick);
-        resetForm();
 
         // Identifica o usuário logado (para bloquear auto-exclusão/desativação).
         const { session } = await authService.getSession();

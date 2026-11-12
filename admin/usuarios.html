@@ -57,7 +57,7 @@
                 <h1>Usuários</h1>
                 <p>Controle quem tem acesso ao painel administrativo.</p>
             </div>
-            <a class="btn-cta" id="novo-usuario" href="#form-usuario">Novo usuário</a>
+            <button type="button" class="btn-cta" id="novo-usuario">Novo usuário</button>
         </div>
 
         <p class="feedback" id="usuario-feedback" role="status" aria-live="polite"></p>
@@ -83,10 +83,11 @@
             <div id="usuarios-paginacao"></div>
         </section>
 
-        <section class="admin-panel" id="form-usuario">
-            <h2 id="usuario-form-title">Novo usuário</h2>
-
+        <!-- Formulário exibido dentro do modal (aberto por js/pages/usuarios.js) -->
+        <div hidden>
             <form class="admin-form" id="usuario-form" novalidate>
+                <p class="feedback" id="usuario-form-feedback" role="alert"></p>
+
                 <div class="form-row">
                     <div class="form-field">
                         <label for="campo-nome-usuario">Nome completo</label>
@@ -132,11 +133,11 @@
                 </div>
 
                 <div class="form-actions">
+                    <button type="button" class="btn-ghost" data-modal-close>Cancelar</button>
                     <button type="submit" id="salvar-usuario" class="call-to-action">Salvar usuário</button>
-                    <button type="button" id="cancelar-edicao-usuario" class="btn-sm btn-edit hide">Cancelar edição</button>
                 </div>
             </form>
-        </section>
+        </div>
     </main>
 
     <footer class="footer">

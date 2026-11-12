@@ -34,14 +34,12 @@
     }
 
     function ctaHtml(evento, situacao) {
-        if (situacao.aberto) {
-            return `<a class="btn-cta btn-cta--block" href="inscricao.html?id=${encodeURIComponent(evento.id)}">
-                Quero me inscrever ${ICONS.arrow}
-            </a>`;
-        }
-        const motivo = situacao.status === "encerrado" ? "Este evento já aconteceu." : "Todas as vagas foram preenchidas.";
-        return `<button type="button" class="btn-cta btn-cta--block" disabled>${dom.escapeHtml(situacao.label)}</button>
-                <p class="cta-note">${motivo}</p>`;
+        const nota = {
+            encerrado: "Este evento já aconteceu.",
+            esgotado: "Todas as vagas foram preenchidas."
+        }[situacao.status];
+
+        return eventoView.inscricaoCta(evento, { block: true }) + (nota ? `<p class="cta-note">${nota}</p>` : "");
     }
 
     function render(evento) {

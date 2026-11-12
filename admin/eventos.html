@@ -57,7 +57,7 @@
                 <h1>Eventos</h1>
                 <p>Gerencie os eventos cadastrados.</p>
             </div>
-            <a class="btn-cta" href="#form-evento">Novo evento</a>
+            <button type="button" class="btn-cta" id="novo-evento">Novo evento</button>
         </div>
 
         <p class="feedback" id="evento-feedback" role="status" aria-live="polite"></p>
@@ -82,10 +82,11 @@
             </div>
         </section>
 
-        <section class="admin-panel" id="form-evento">
-            <h2>Novo evento</h2>
-
+        <!-- Formulário exibido dentro do modal (aberto por js/pages/eventos.js) -->
+        <div hidden>
             <form class="admin-form" id="evento-form" novalidate>
+                <p class="feedback" id="evento-form-feedback" role="alert"></p>
+
                 <div class="form-field">
                     <label for="campo-titulo">Nome do evento</label>
                     <input type="text" id="campo-titulo" name="titulo" placeholder="Ex: Curso de Banco de Dados" />
@@ -165,9 +166,12 @@
                     <span class="error">Descrição completa é obrigatória</span>
                 </div>
 
-                <button type="submit" id="salvar-evento" class="call-to-action">Salvar evento</button>
+                <div class="form-actions">
+                    <button type="button" class="btn-ghost" data-modal-close>Cancelar</button>
+                    <button type="submit" id="salvar-evento" class="call-to-action">Salvar evento</button>
+                </div>
             </form>
-        </section>
+        </div>
     </main>
 
     <footer class="footer">

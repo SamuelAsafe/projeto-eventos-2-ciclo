@@ -64,7 +64,8 @@ begin
     raise exception 'Evento não encontrado' using errcode = 'P0002', hint = 'evento_nao_encontrado';
   end if;
 
-  if v_data_evento < current_date then
+  -- "Hoje" no fuso de Brasília: o current_date do banco é UTC (após 21h já seria amanhã).
+  if v_data_evento < (now() at time zone 'America/Sao_Paulo')::date then
     raise exception 'Inscrições encerradas' using errcode = 'P0001', hint = 'inscricoes_encerradas';
   end if;
 

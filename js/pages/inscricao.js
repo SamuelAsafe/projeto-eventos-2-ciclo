@@ -246,7 +246,7 @@
             const message = situacao.status === "encerrado"
                 ? "Este evento já aconteceu."
                 : "Todas as vagas deste evento foram preenchidas.";
-            showEmpty("Inscrições encerradas", message);
+            showEmpty(situacao.status === "encerrado" ? "Inscrição encerrada" : "Vagas esgotadas", message);
             return;
         }
 
