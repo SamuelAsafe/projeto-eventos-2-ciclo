@@ -16,16 +16,21 @@
     const root = document.documentElement;
     const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const THEMES = ["overworld", "nether", "end"];
+    const LABELS = {
+        overworld: "Over World",
+        nether: "Nether",
+        end: "The End"
+    };
 
-    // Marca que o JS está ativo (CSS só esconde elementos animáveis quando há JS).
     root.classList.add("js");
 
     function readSaved() {
         try {
             const value = window.localStorage.getItem(STORAGE_KEY);
-            return value === "light" || value === "dark" ? value : null;
+            return THEMES.includes(value) ? value : null;
         } catch {
-            return null; // modo privado / storage bloqueado
+            return null;
         }
     }
 
@@ -38,7 +43,12 @@
     }
 
     function current() {
-        return root.dataset.theme === "light" ? "light" : "dark";
+        return THEMES.includes(root.dataset.theme) ? root.dataset.theme : "overworld";
+    }
+
+    function nextTheme(theme) {
+        const index = THEMES.indexOf(theme);
+        return THEMES[(index + 1) % THEMES.length];
     }
 
     function apply(value) {
@@ -47,14 +57,22 @@
     }
 
     function updateButton(button) {
-        const isDark = current() === "dark";
-        button.setAttribute("aria-pressed", String(isDark));
-        button.setAttribute("aria-label", isDark ? "Ativar tema claro" : "Ativar tema escuro");
-        button.title = isDark ? "Tema claro" : "Tema escuro";
+        const activeTheme = current();
+        const label = LABELS[activeTheme] || "Over World";
+        const next = nextTheme(activeTheme);
+        const labelNode = button.querySelector(".theme-toggle__label");
+
+        if (labelNode) {
+            labelNode.textContent = label;
+        }
+
+        button.dataset.theme = activeTheme;
+        button.setAttribute("aria-label", `Alternar para o tema ${LABELS[next]}`);
+        button.title = `Tema atual: ${label}`;
     }
 
     function toggle(event) {
-        const next = current() === "dark" ? "light" : "dark";
+        const next = nextTheme(current());
         save(next);
 
         if (!document.startViewTransition || reducedMotion.matches) {
@@ -62,7 +80,6 @@
             return;
         }
 
-        // Origem do círculo: centro do botão clicado.
         const rect = event.currentTarget.getBoundingClientRect();
         const x = rect.left + rect.width / 2;
         const y = rect.top + rect.height / 2;
@@ -88,7 +105,7 @@
 
         const item = document.createElement("li");
         item.className = "item item-theme";
-        item.innerHTML = `<button type="button" class="theme-toggle">${ICONS}</button>`;
+        item.innerHTML = `<button type="button" class="theme-toggle"><span class="theme-toggle__icons">${ICONS}</span><span class="theme-toggle__label">Over World</span></button>`;
 
         const button = item.querySelector("button");
         button.addEventListener("click", toggle);
@@ -96,12 +113,10 @@
         nav.appendChild(item);
     }
 
-    // Aplica imediatamente (antes do body).
-    apply(readSaved() ?? (systemDark.matches ? "dark" : "light"));
+    apply(readSaved() ?? (systemDark.matches ? "nether" : "overworld"));
 
-    // Segue o sistema enquanto o usuário não escolheu manualmente.
     systemDark.addEventListener("change", (event) => {
-        if (!readSaved()) apply(event.matches ? "dark" : "light");
+        if (!readSaved()) apply(event.matches ? "nether" : "overworld");
     });
 
     if (document.readyState === "loading") {
