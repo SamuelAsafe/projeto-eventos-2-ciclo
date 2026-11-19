@@ -384,12 +384,12 @@ button {
                 border-radius: 0;
                 background: linear-gradient(180deg, #b8b8b8 0%, #8d8d8d 100%);
                 color: #1b1b1b;
-                box-shadow: 3px 3px 0 var(--slot-shadow), inset 0 0 0 1px rgba(255, 255, 255, .18);
+                
                 font-size: 13px;
                 font-weight: 700;
                 text-decoration: none;
                 cursor: pointer;
-                transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast), filter var(--duration-fast);
+                
 
                 &:hover {
                     transform: translate(-1px, -1px);
@@ -420,7 +420,7 @@ button {
 .theme-toggle .slider {
     position: absolute;
     inset: 0;
-    background: #900c3f;
+    background: #0c903f;
     transition: background-color .35s;
 }
 
@@ -1690,10 +1690,7 @@ button {
     input,
     select,
     textarea {
-        border-radius: var(--radius-md);
         padding: 12px 15px;
-        background-color: var(--color-input);
-        border: 1px solid var(--color-border-strong);
         color: var(--color-text);
         outline: none;
         transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
@@ -1805,8 +1802,7 @@ html[data-auth="required"] body {
 
 .admin-panel {
     background: linear-gradient(180deg, rgba(111, 111, 111, .78) 0%, rgba(73, 73, 73, .9) 100%);
-    border: 3px solid var(--slot-frame);
-    border-radius: 0;
+    
     padding: 26px;
     box-shadow: 6px 6px 0 var(--slot-shadow), inset 0 0 0 2px rgba(255, 255, 255, .08);
 
