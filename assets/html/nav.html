@@ -1,0 +1,57 @@
+<template id="nav-public">
+    <nav class="header-menu inventory" aria-label="Principal">
+        <a href="{{base}}index.html" class="brand">
+            <img class="logo" alt="Eventos Fatec — início" src="{{base}}assets/images/logotipo-eventos-fatec.png" />
+        </a>
+        <ul class="navigation inventory">
+            <li class="item">
+                <a class="link inventory" data-nav="inicio" href="{{base}}index.html">Início</a>
+            </li>
+            <li class="item">
+                <a class="link inventory" href="{{base}}index.html#eventos">Eventos</a>
+            </li>
+            <li class="item">
+                <a class="link inventory" href="{{base}}index.html#categorias">Categorias</a>
+            </li>
+        </ul>
+    </nav>
+</template>
+
+<template id="nav-admin-login">
+    <nav class="header-menu" aria-label="Principal">
+        <img class="logo" alt="Logotipo Eventos Fatec" title="Logotipo Eventos Fatec"
+            src="{{base}}assets/images/logotipo-eventos-fatec.png" />
+        <ul class="navigation">
+            <li class="item">
+                <a class="link" href="{{base}}index.html">Voltar para o site</a>
+            </li>
+        </ul>
+    </nav>
+</template>
+
+<template id="nav-admin">
+    <nav class="header-menu" aria-label="Principal">
+        <img class="logo" alt="Logotipo Eventos Fatec" title="Logotipo Eventos Fatec"
+            src="{{base}}assets/images/logotipo-eventos-fatec.png" />
+        <ul class="navigation">
+            <li class="item">
+                <a class="link" data-nav="painel" href="{{base}}admin/index.html">Painel</a>
+            </li>
+            <li class="item">
+                <a class="link" data-nav="eventos" href="{{base}}admin/eventos.html">Eventos</a>
+            </li>
+            <li class="item">
+                <a class="link" data-nav="categorias" href="{{base}}admin/categorias.html">Categorias</a>
+            </li>
+            <li class="item">
+                <a class="link" data-nav="inscritos" href="{{base}}admin/inscritos.html">Inscritos</a>
+            </li>
+            <li class="item">
+                <a class="link" data-nav="usuarios" href="{{base}}admin/usuarios.html">Usuários</a>
+            </li>
+            <li class="item">
+                <a class="link" id="logout" href="{{base}}admin/login.html">Sair</a>
+            </li>
+        </ul>
+    </nav>
+</template>

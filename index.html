@@ -8,6 +8,7 @@
     <meta name="description" content="Workshops, palestras, hackathons e outros eventos da Fatec. Encontre e inscreva-se.">
     <meta name="color-scheme" content="dark light">
     <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="./assets/css/mine.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,25 +23,8 @@
 <body class="site">
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-    <nav class="header-menu" aria-label="Principal">
-        <a href="index.html" class="brand">
-            <img class="logo" alt="Eventos Fatec — início" src="./assets/images/logotipo-eventos-fatec.png" />
-        </a>
-        <ul class="navigation">
-            <li class="item">
-                <a class="link active" href="index.html" aria-current="page">Início</a>
-            </li>
-            <li class="item">
-                <a class="link" href="index.html#eventos">Eventos</a>
-            </li>
-            <li class="item">
-                <a class="link" href="index.html#categorias">Categorias</a>
-            </li>
-            <li class="item">
-                <a class="call-to-action" href="index.html#eventos">Explorar eventos</a>
-            </li>
-        </ul>
-    </nav>
+    <div id="site-navigation"></div>
+    <script src="./assets/js/nav.js"></script>
 
     <header class="hero">
         <div class="hero-aurora" aria-hidden="true">
@@ -140,6 +124,8 @@
     <script src="./js/services/catalogoService.js"></script>
     <script src="./js/components/eventoView.js"></script>
     <script src="./js/pages/home.js"></script>
+    
 </body>
+
 
 </html>

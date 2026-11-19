@@ -1,0 +1,18 @@
+.inventory {
+  background: #c6c6c6;
+  border-radius: 3px;
+  box-shadow: 5px 5px 0px #555555, inset 4px 4px 0px #fefefe;
+  padding-top: 5px;
+  padding-left: 5px;
+  margin-bottom: 10px;
+  border-radius: 0;
+}
+
+.slot {
+  display: flex;
+  justify-content: center;
+  background: #8b8b8b;
+  box-shadow: inset 1.5px 1.5px 0px rgba(55, 55, 55, 0.8),
+    inset -2px -2px 0px #ffffff;
+    border-radius: 0;
+}

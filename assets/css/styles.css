@@ -347,10 +347,7 @@ button {
         gap: 4px;
         list-style: none;
         padding: 5px;
-        border-radius: var(--radius-pill);
-        background-color: var(--color-surface);
-        border: 1px solid var(--color-border);
-        box-shadow: var(--shadow-sm);
+        
 
         .item {
             display: flex;
@@ -358,7 +355,6 @@ button {
             .link {
                 display: inline-block;
                 padding: 8px 15px;
-                border-radius: var(--radius-pill);
                 color: var(--color-text-muted);
                 font-size: 14px;
                 text-decoration: none;
@@ -370,6 +366,12 @@ button {
                 }
 
                 &.active {
+                    display: flex;
+                    justify-content: center;
+                    background: #8b8b8b;
+                    box-shadow: inset 1.5px 1.5px 0px rgba(55, 55, 55, 0.8),
+                    inset -2px -2px 0px #ffffff;
+                    border-radius: 0;
                     color: var(--color-on-primary);
                     background-color: var(--color-primary);
                 }
@@ -401,68 +403,89 @@ button {
 
 .theme-toggle {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-width: 122px;
-    height: 38px;
-    padding: 0 12px;
-    border-radius: 0;
-    border: 2px solid var(--slot-frame);
-    background: linear-gradient(180deg, #b2b2b2 0%, #8f8f8f 100%);
-    color: #1f1f1f;
+    display: inline-block;
+    width: 4.8em;
+    height: 0.34em;
+    font-size: 30px;
     cursor: pointer;
-    overflow: hidden;
-    transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast), filter var(--duration-fast);
-    box-shadow: 3px 3px 0 var(--slot-shadow), inset 0 0 0 1px rgba(255, 255, 255, .18);
-
-    &:hover {
-        transform: translate(-1px, -1px);
-        filter: brightness(1.05);
-        box-shadow: 5px 5px 0 var(--slot-shadow), inset 0 0 0 1px rgba(255, 255, 255, .2);
-    }
-
-    .theme-toggle__icons {
-        position: relative;
-        display: inline-flex;
-        width: 18px;
-        height: 18px;
-    }
-
-    svg {
-        position: absolute;
-        inset: 0;
-        width: 18px;
-        height: 18px;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 1.8;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        transition: transform .5s var(--ease-spring), opacity var(--duration);
-    }
-
-    .theme-toggle__label {
-        font-size: 11px;
-        line-height: 1;
-        letter-spacing: .08em;
-        font-weight: 800;
-        text-transform: uppercase;
-    }
 }
 
-.theme-toggle .icon-sun,
-.theme-toggle .icon-moon {
-    opacity: .42;
-    transform: scale(.85);
+.theme-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
 }
 
-:root[data-theme="overworld"] .theme-toggle .icon-sun,
-:root[data-theme="nether"] .theme-toggle .icon-moon,
-:root[data-theme="end"] .theme-toggle .icon-moon {
+.theme-toggle .slider {
+    position: absolute;
+    inset: 0;
+    background: #900c3f;
+    transition: background-color .35s;
+}
+
+.theme-toggle .theme-icon {
+    position: absolute;
+    left: 0;
+    bottom: -.83em;
+    width: 1.75em;
+    height: 1.75em;
+    image-rendering: pixelated;
+    transition: transform .4s, opacity .25s, background-color .35s;
+}
+
+.theme-toggle .theme-icon--off {
     opacity: 1;
-    transform: scale(1);
+}
+
+.theme-toggle .theme-icon--on,
+.theme-toggle .theme-icon--end {
+    opacity: 0;
+}
+
+.theme-toggle input:focus-visible + .slider {
+    box-shadow: 0 0 0 3px rgba(199, 0, 57, .35);
+}
+
+.theme-toggle[data-theme="nether"] .slider {
+    background: #c70039;
+}
+
+.theme-toggle[data-theme="nether"] .theme-icon--off {
+    opacity: 0;
+}
+
+.theme-toggle[data-theme="nether"] .theme-icon--on {
+    opacity: 1;
+}
+
+.theme-toggle[data-theme="overworld"] .theme-icon,
+.theme-toggle[data-theme="nether"] .theme-icon,
+.theme-toggle[data-theme="end"] .theme-icon {
+    transform: translateX(0);
+}
+
+.theme-toggle[data-theme="nether"] .theme-icon {
+    transform: translateX(1.55em);
+}
+
+.theme-toggle[data-theme="end"] .slider {
+    background: #4b3578;
+}
+
+.theme-toggle[data-theme="end"] .theme-icon--off,
+.theme-toggle[data-theme="end"] .theme-icon--on {
+    opacity: 0;
+}
+
+.theme-toggle[data-theme="end"] .theme-icon--end {
+    transform: translateX(3.05em);
+    display: grid;
+    place-items: center;
+    opacity: 1;
+    background: #171125;
+    color: #f5d77a;
+    font-size: .95em;
 }
 
 /* ---------- 4. Botões, tags e chips ---------- */
@@ -2539,13 +2562,3 @@ button:disabled {
     }
 }
 
-.inventory {
-  --width: 335px;
-  --height: 200px;
-  background: #c6c6c6;
-  border-radius: 3px;
-  box-shadow: 5px 5px 0px #555555, inset 4px 4px 0px #fefefe;
-  padding-top: 5px;
-  padding-left: 5px;
-  margin-bottom: 10px;
-}

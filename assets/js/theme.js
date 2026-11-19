@@ -60,18 +60,20 @@
         const activeTheme = current();
         const label = LABELS[activeTheme] || "Over World";
         const next = nextTheme(activeTheme);
-        const labelNode = button.querySelector(".theme-toggle__label");
-
-        if (labelNode) {
-            labelNode.textContent = label;
-        }
+        const input = button.querySelector("input");
 
         button.dataset.theme = activeTheme;
         button.setAttribute("aria-label", `Alternar para o tema ${LABELS[next]}`);
         button.title = `Tema atual: ${label}`;
+
+        if (input) {
+            input.checked = activeTheme !== "overworld";
+            input.setAttribute("aria-label", `Tema atual: ${label}`);
+        }
     }
 
     function toggle(event) {
+        event.preventDefault();
         const next = nextTheme(current());
         save(next);
 
@@ -94,20 +96,25 @@
         });
     }
 
-    const ICONS = `
-        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-    `;
-
     function injectToggle() {
         const nav = document.querySelector(".header-menu .navigation");
         if (!nav || nav.querySelector(".theme-toggle")) return;
 
         const item = document.createElement("li");
         item.className = "item item-theme";
-        item.innerHTML = `<button type="button" class="theme-toggle"><span class="theme-toggle__icons">${ICONS}</span><span class="theme-toggle__label">Over World</span></button>`;
+        item.innerHTML = `
+            <label class="theme-toggle theme-switch" title="Tema atual: Over World">
+                <input type="checkbox" aria-label="Tema atual: Over World" />
+                <span class="slider"></span>
+                <img class="theme-icon theme-icon--off" alt="" aria-hidden="true"
+                    src="../assets/images/grass.png" />
+                <img class="theme-icon theme-icon--on" alt="" aria-hidden="true"
+                    src="../assets/images/netherrack.png" />
+                <img class="theme-icon theme-icon--end" alt="✦" aria-hidden="true"
+                    src="../assets/images/endstone.png" />
+            </label>`;
 
-        const button = item.querySelector("button");
+        const button = item.querySelector(".theme-toggle");
         button.addEventListener("click", toggle);
         updateButton(button);
         nav.appendChild(item);
@@ -124,4 +131,6 @@
     } else {
         injectToggle();
     }
+
+    document.addEventListener("navigationLoaded", injectToggle);
 })();
