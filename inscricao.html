@@ -47,9 +47,9 @@
         </div>
 
         <div id="inscricao-conteudo" class="subscription-content" hidden>
-            <aside class="subscription-summary" id="resumo-evento" data-reveal></aside>
+            <aside class="subscription-summary tijolo" id="resumo-evento" data-reveal></aside>
 
-            <form class="subscription-form" id="form-inscricao" novalidate data-reveal>
+            <form class="subscription-form inventory" id="form-inscricao" novalidate data-reveal>
                 <div class="subscription-form-header">
                     <h1 class="title">Garanta sua vaga</h1>
                     <p>Preencha seus dados. Leva menos de um minuto.</p>
@@ -59,14 +59,14 @@
 
                 <div class="form-field">
                     <label for="campo-nome">Nome completo</label>
-                    <input type="text" id="campo-nome" name="nome" placeholder="Como no seu documento"
+                    <input class="slot" type="text" id="campo-nome" name="nome" placeholder="Como no seu documento"
                         autocomplete="name" maxlength="120" required />
                     <span class="error">Informe seu nome completo.</span>
                 </div>
 
                 <div class="form-field">
                     <label for="campo-email">E-mail</label>
-                    <input type="email" id="campo-email" name="email" placeholder="voce@email.com"
+                    <input class="slot" type="email" id="campo-email" name="email" placeholder="voce@email.com"
                         autocomplete="email" maxlength="254" required />
                     <span class="error">Informe um e-mail válido.</span>
                 </div>
@@ -74,28 +74,28 @@
                 <div class="form-row">
                     <div class="form-field">
                         <label for="campo-documento">CPF</label>
-                        <input type="text" id="campo-documento" name="documento" placeholder="000.000.000-00"
+                        <input class="slot" type="text" id="campo-documento" name="documento" placeholder="000.000.000-00"
                             inputmode="numeric" autocomplete="off" maxlength="14" required />
                         <span class="error">Informe um CPF válido.</span>
                     </div>
 
                     <div class="form-field">
                         <label for="campo-nascimento">Data de nascimento</label>
-                        <input type="date" id="campo-nascimento" name="data_nascimento" autocomplete="bday" required />
+                        <input class="slot" type="date" id="campo-nascimento" name="data_nascimento" autocomplete="bday" required />
                         <span class="error">Informe sua data de nascimento.</span>
                     </div>
                 </div>
 
                 <div class="form-field">
                     <label for="campo-whatsapp">WhatsApp</label>
-                    <input type="tel" id="campo-whatsapp" name="whatsapp" placeholder="(15) 99999-9999"
+                    <input class="slot" type="tel" id="campo-whatsapp" name="whatsapp" placeholder="(15) 99999-9999"
                         inputmode="tel" autocomplete="tel-national" maxlength="15" required />
                     <span class="error">Informe um WhatsApp válido com DDD.</span>
                 </div>
 
                 <p class="privacy-note">Seus dados são usados apenas pela organização deste evento.</p>
 
-                <button type="submit" class="call-to-action" id="botao-inscrever">Confirmar inscrição</button>
+                <button type="submit" class="call-to-action inventory" id="botao-inscrever">Confirmar inscrição</button>
             </form>
         </div>
 

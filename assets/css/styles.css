@@ -18,6 +18,29 @@
 
 /* ---------- 1. Tokens ---------- */
 
+@font-face {
+    font-family: 'Minecraft';
+    src: url('../fonts/minecraft/Minecraft.otf') format('otf');
+    /*    url('../fonts/minecraft/Minecraft.ttf') format('ttf'),
+        url('../fonts/minecraft/Minecraft.woff2') format('woff2'),
+        url('../fonts/minecraft/Minecraft.woff') format('woff');
+    
+    */    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'MinecraftTitle';
+    src: url('../fonts/minecraft/Titulo.woff') format('woff');
+    /*    url('../fonts/minecraft/Minecraft.ttf') format('ttf'),
+        url('../fonts/minecraft/Minecraft.woff2') format('woff2'),
+        url('../fonts/minecraft/Minecraft.woff') format('woff');
+    
+    */    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     /* Escala (não muda com o tema) */
     --radius-sm: 8px;
@@ -74,6 +97,8 @@
 :root[data-theme="overworld"] {
     color-scheme: light;
 
+    --brick-image: url("../images/T_pedra.png");
+    --C-grid-bg: url("../images/C_pinheiro.png");
     --color-bg: #dff5ff;
     --color-bg-elevated: #eefbe5;
     --color-surface: #f6f0d9;
@@ -81,7 +106,7 @@
     --color-input: #fffef5;
 
     --color-text: #183425;
-    --color-text-muted: #4d5d4a;
+    --color-text-muted: #32522d;
     --color-border: rgba(20, 53, 34, .18);
     --color-border-strong: rgba(20, 53, 34, .28);
 
@@ -123,6 +148,8 @@
 :root[data-theme="nether"] {
     color-scheme: dark;
 
+    --brick-image: url("../images/T_nether.png");
+    --C-grid-bg: url("../images/C_luminosa.png");
     --color-bg: #1a0d11;
     --color-bg-elevated: #2f1217;
     --color-surface: #3d1a1c;
@@ -172,14 +199,16 @@
 :root[data-theme="end"] {
     color-scheme: dark;
 
+    --brick-image: url("../images/T_end.png");
+    --C-grid-bg: url("../images/C_obsidian.png");
     --color-bg: #120d1d;
     --color-bg-elevated: #1d1730;
     --color-surface: #241b38;
     --color-surface-2: #32244a;
     --color-input: #171224;
 
-    --color-text: #f6ecff;
-    --color-text-muted: #bfafd9;
+    --color-text: #4f2f83;
+    --color-text-muted: #af8fe2;
     --color-border: rgba(240, 229, 255, .12);
     --color-border-strong: rgba(240, 229, 255, .22);
 
@@ -232,7 +261,8 @@ html {
 }
 
 body {
-    font-family: var(--font-sans);
+    /*font-family: var(--font-sans);*/
+    font-family: 'Minecraft', 'Arial', sans-serif;
     background-color: var(--color-bg);
     color: var(--color-text);
     min-height: 100vh;
@@ -244,8 +274,12 @@ body {
     > main {
         flex: 1;
     }
-}
 
+    
+}
+h1{
+    font-family: 'MinecraftTitle', 'Minecraft', sans-serif;
+}
 input,
 select,
 textarea,
@@ -1019,9 +1053,12 @@ button {
 /* Grade de eventos */
 .event-grid {
     display: grid;
+    padding: 50px;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
-    gap: 26px 22px;
-
+    gap: 50px 50px;
+    background-image: var(--C-grid-bg);
+    background-repeat: repeat;
+    background-size: 50px;
     > .empty-state {
         grid-column: 1 / -1;
     }
@@ -1036,8 +1073,10 @@ button {
 .event-card-link {
     display: flex;
     flex-direction: column;
+    padding: 14px;
     gap: 14px;
     height: 100%;
+    max-width: 500px;
     color: inherit;
     text-decoration: none;
     border-radius: var(--radius-xl);
@@ -1652,21 +1691,16 @@ button {
 
 .subscription-form .call-to-action,
 .admin-form .call-to-action {
-    background: linear-gradient(180deg, #b8b8b8 0%, #8d8d8d 100%);
     color: #1a1a1a;
-    border: 2px solid var(--slot-frame);
     padding: 13px 18px;
     border-radius: 0;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 4px 4px 0 var(--slot-shadow), inset 0 0 0 1px rgba(255, 255, 255, .18);
-    transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast), filter var(--duration-fast);
 
     &:hover:not(:disabled) {
-        transform: translate(-1px, -1px);
+        transform: translate(1px, 1px);
         filter: brightness(1.04);
-        box-shadow: 6px 6px 0 var(--slot-shadow), inset 0 0 0 1px rgba(255, 255, 255, .2);
     }
 }
 
@@ -1927,6 +1961,14 @@ html[data-auth="required"] body {
         transform: translateY(-3px);
         box-shadow: var(--shadow-md);
     }
+}
+
+.tijolo,
+.admin-quicklink {
+    background-image: var(--brick-image);
+    background-size: 50px;
+    background-repeat: repeat;
+    border-radius: 0;
 }
 
 .badge {
@@ -2557,4 +2599,3 @@ button:disabled {
         align-items: flex-start;
     }
 }
-

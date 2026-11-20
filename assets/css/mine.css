@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'Minecraft';
+    src: url('../fonts/minecraft/Minecraft.woff2') format('woff2'),
+        url('../fonts/minecraft/Minecraft.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
 .inventory {
   background: #c6c6c6;
   border-radius: 3px;
@@ -15,4 +23,8 @@
   box-shadow: inset 1.5px 1.5px 0px rgba(55, 55, 55, 0.8),
     inset -2px -2px 0px #ffffff;
     border-radius: 0;
+}
+
+h1{
+  font-family: 'MinecraftTitle', 'Minecraft', sans-serif;
 }

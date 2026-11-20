@@ -109,7 +109,7 @@ const eventoView = (function () {
         ].join("");
 
         return `
-            <article class="event-card event-card--${variant}${info.aberto ? "" : " is-closed"}" ${accentStyle(evento)}
+            <article class="event-card tijolo event-card--${variant}${info.aberto ? "" : " is-closed"}" ${accentStyle(evento)}
                 data-evento-id="${dom.escapeHtml(evento.id)}" data-reveal>
                 <a class="event-card-link" href="${href}" aria-label="${dom.escapeHtml(evento.nome)} — ver detalhes">
                     <div class="event-cover">
